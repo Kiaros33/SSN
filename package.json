@@ -1,0 +1,35 @@
+{
+  "name": "ssn",
+  "version": "1.0.0",
+  "description": "SimpleSocialNetwork",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server/server.js",
+    "server": "nodemon server/server.js",
+    "client": "npm run start --prefix client",
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "heroku-postbuild": "NPM_CONFIG_PRODUCTION=false npm install --prefix client && npm run build --prefix client"
+  },
+  "engines": {
+    "node": "8.11.1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "bcrypt": "^2.0.1",
+    "body-parser": "^1.18.2",
+    "concurrently": "^3.5.1",
+    "cookie-parser": "^1.4.3",
+    "ejs": "^2.6.1",
+    "express": "^4.16.3",
+    "formidable": "^1.2.1",
+    "fs": "0.0.1-security",
+    "gridfs": "^1.0.0",
+    "gridfs-stream": "^1.1.1",
+    "jsonwebtoken": "^8.2.1",
+    "moment-js": "^1.1.15",
+    "mongoose": "^5.1.0",
+    "socket.io": "^2.1.0"
+  }
+}
