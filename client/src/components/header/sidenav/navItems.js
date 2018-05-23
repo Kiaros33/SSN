@@ -65,6 +65,7 @@ const NavItems = ({user}) => {
         }
     ]
 
+
     const splitElements = (item,i) => (
         <div key={i} className={item.type}>
             <Link to={item.link}>

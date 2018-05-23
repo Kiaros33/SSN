@@ -17,6 +17,11 @@ header {
     height:53px;
 }
 
+#fof{
+    font-size: 30px;
+    text-align: center;
+}
+
 header .logo {
     text-align: center;
     font-size: 30px;
@@ -290,64 +295,6 @@ h1.ssn{
 }
 
 
-/* 
-
-.l_container {
-    margin-top: 20px;
-    text-align: center;
-}
-
-.l_container .form_element {
-    margin-top: 20px;
-}
-
-
-.l_container h2 {
-    font-size: 33px;
-    font-weight: 300;
-    color: rgb(60, 60, 60);
-}
-
-.l_container input {
-    font-size: 20px;
-    border-radius: 3px;
-    border: 1px solid #c7c7c7;
-    box-sizing: border-box;
-    padding: 11px;
-    background: #f7f7f7;
-    font-weight: 300;
-    width: 260px;
-}
-
-.l_container a{
-    text-decoration: none;
-    color: #dddddd
-}
-
-.l_container button {
-    display:block;
-    font-size: 20px;
-    padding: 10px 52px;
-    background: rgb(60, 60, 60);
-    color: #dddddd;
-    font-weight: 300;
-    border-radius: 3px;
-    border: none;
-    margin-top: 20px;
-    margin: 20px auto;
-    width: 260px;
-}
-
-.l_container .error{
-    color: rgb(243, 10, 10);
-    font-family: Roboto;
-} */
-/* 
-.r_error{
-    color: rgb(243, 10, 10);
-    font-family: Roboto;
-    height: 30px;
-} */
 
 ::-webkit-input-placeholder { /* Chrome/Opera/Safari */
     color: #d8d8d8;
@@ -434,3 +381,4 @@ h1.ssn{
     transform: rotate(360deg);
   }
 }
+

@@ -11,6 +11,7 @@ const {Message} = require('./models/chat');
 const {auth} = require('./middleware/auth');
 const fs = require('fs');
 const formidable = require('formidable');
+const axios = require('axios');
 
 
 const app = express();
@@ -63,15 +64,41 @@ io.on('connection',(socket)=>{
 // LOAD INITIAL DATA OF THE CHAT ROOM//
 app.get('/api/loadInitialData',(req,res)=>{
     let room = req.query.room;
+    let user = req.query.user;
+
+    Message.update({to:user,read:false,roomId:room},{read:true},{multi:true},(err,res)=>{
+        if (err) return res.status(400).send(err);
+    })
 
     Message.find({roomId: room}).sort({createdAt:'desc'}).limit(35).exec((err,msglist)=>{
         if (err) return res.status(400).send(err);
-
         msglist.reverse();
-
         res.send(msglist);
     })    
 })
+
+
+app.post('/api/readMessage',(req,res)=>{
+    Message.findByIdAndUpdate(req.body.message._id,{read:true},(err,message)=>{
+        if (err) return res.status(400).send(err);
+        res.json({
+            read:true
+        })
+    })
+})
+
+// app.get('/api/ifUnread',(req,res)=>{
+//     console.log(req.query)
+//     Message.findOne({to:req.query.userId,read:false},(err,msg)=>{
+//         if (err) return res.status(400).send(err);
+//         if (!msg) return res.json({
+//             unread:false
+//         })
+//         res.json({
+//             unread:true
+//         })
+//     })
+// })
 
 
 
@@ -529,7 +556,7 @@ app.post('/api/deleteFriend',auth,(req,res)=>{
     });
 });
 
-// GET ALL FRIENDS OF CURRENT USER //
+// GET ALL FRIENDS OF CURRENT USER AND CHECK FOR NEW MESSAGES FROM THEM//
 app.get('/api/showFriends',(req,res)=>{
     User.find({friends:req.query.userId}).select({nickname:1,image:1}).exec((err,friends)=>{
         if (err) {
@@ -538,11 +565,69 @@ app.get('/api/showFriends',(req,res)=>{
                 err
             })
         }
-        return res.status(200).json({
-            friends
-        })
+        
+        Message.find({to:req.query.userId,read:false}).select({from:1,_id:0}).exec((err,messages)=>{
+            if (err) return res.status(400).json({
+                err
+            });
+            return res.status(200).json({
+                friends,
+                messages
+            })
+        });
     })
 })
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// GOOGLE SIGN-UP-IN //
+app.post('/api/googleRegLog',(req,res)=>{
+    axios.get(`https://www.googleapis.com/oauth2/v3/tokeninfo?id_token=${req.body.token}`)
+    .then(({data})=>{
+        if (data.email && data.email_verified) {
+            User.findOne({'email':data.email},(err,user)=>{
+                if (!user) {
+                    const user = new User({
+                        email: data.email,
+                        nickname: data.given_name ? data.given_name : 'NoName',
+                        password: data.jti + data.at_hash,
+                        image: data.picture
+                    });
+                    user.save((err,user)=>{
+                        if (err) return res.json({
+                            success:false,
+                            err
+                        });
+                        user.genToken((err,user)=>{
+                            if (err) return res.status(400).send(err);
+                            res.cookie('auth',user.token).json({
+                                isAuth:true,
+                                id:user._id,
+                                nickname:user.nickname,
+                                email:user.email,
+                                image:user.image
+                            })
+                        })
+                    })  
+                }
+                else{
+                    user.genToken((err,user)=>{
+                        if (err) return res.status(400).send(err);
+                        res.cookie('auth',user.token).json({
+                            isAuth:true,
+                            id:user._id,
+                            nickname:user.nickname,
+                            email:user.email,
+                            image:user.image
+                        })
+                    })
+                }         
+            })
+        }
+    });
+})
+
+
     
 /*====================LISTEN====================*/
 server.listen(config.PORT,()=>{

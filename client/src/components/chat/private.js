@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import {loadInitialData,addItem} from '../../actions';
+import {loadInitialData,addItem,readMessage} from '../../actions';
 import io from 'socket.io-client';
 import moment from 'moment-js'
 
@@ -20,7 +20,7 @@ class Private extends Component {
         room = user1Id > user2Id ? user1Id + user2Id : user2Id + user1Id;
 
         //Connecting to socket
-        socket = io.connect('http://192.168.1.39:3001');
+        socket = io('http://192.168.1.39:3001');
         socket.on('connect',function(){
 
             console.log(`User connected to a socket`);
@@ -32,12 +32,15 @@ class Private extends Component {
                 }
                 else{
                     console.log(`New user connected to room ${room}`);
-                    dispatch(loadInitialData(room));
+                    dispatch(loadInitialData(room,user1Id));
                 }
 
                 //On receiving message
                 socket.on('messageBack',function(message){
-                    dispatch(addItem(message))
+                    dispatch(addItem(message));
+                    if (user1Id === message.to) {
+                        dispatch(readMessage(message));
+                    }
                 })
             });
         });
@@ -47,7 +50,7 @@ class Private extends Component {
 
     state = {
         text:'',
-        messages:[]
+        messages:'-'
     }
 
     scrollToBottom=()=>{
@@ -90,30 +93,41 @@ class Private extends Component {
         })
     }
 
-    fetchData = (arr) => (
-        arr !== null && arr.length !== 0 ?
-            arr.map((item,i) =>(
-                item.from === this.props.user.login.id ?
-                <div className="chat_user1" key={i}>
-                    <div className="chat_user1_info">
-                        <div className="chat_date">{moment(item.createdAt).format('hh:mm')}</div>
-                        <div className='chat_img' style={{backgroundImage:`url('${item.image}')`,backgroundSize:'cover', backgroundPosition:'center'}}></div>
-                        <div className="chat_user1_text">{item.message.text}</div>
+    fetchData = (arr) => {
+        if (arr === '-') {
+            return(
+                <div>Loading messages...</div>
+            )
+        }
+        else if(arr.length === 0){
+            return(
+                <div>That chat is empty</div>
+            )
+        }
+        else{
+            return(
+                arr.map((item,i) =>(
+                    item.from === this.props.user.login.id ?
+                    <div className="chat_user1" key={i}>
+                        <div className="chat_user1_info">
+                            <div className="chat_date">{moment(item.createdAt).format('hh:mm')}</div>
+                            <div className='chat_img' style={{backgroundImage:`url('${item.image}')`,backgroundSize:'cover', backgroundPosition:'center'}}></div>
+                            <div className="chat_user1_text">{item.message.text}</div>
+                        </div>
                     </div>
-                </div>
-                :
-                <div className="chat_user2" key={i}>
-                    <div className="chat_user2_info">
-                        <div className="chat_user2_text">{item.message.text}</div>
-                        <div className='chat_img' style={{backgroundImage:`url('${item.image}')`,backgroundSize:'cover', backgroundPosition:'center'}}></div>
-                        <div className="chat_date">{moment(item.createdAt).format('hh:mm')}</div>
+                    :
+                    <div className="chat_user2" key={i}>
+                        <div className="chat_user2_info">
+                            <div className="chat_user2_text">{item.message.text}</div>
+                            <div className='chat_img' style={{backgroundImage:`url('${item.image}')`,backgroundSize:'cover', backgroundPosition:'center'}}></div>
+                            <div className="chat_date">{moment(item.createdAt).format('hh:mm')}</div>
+                        </div>
                     </div>
-                </div>
-
-            ))
-        :
-            <div>This chat is empty</div>
-    )
+    
+                ))
+            )
+        }
+    }
 
     componentWillReceiveProps(nextProps) {
         if(nextProps.chat.chat.data){

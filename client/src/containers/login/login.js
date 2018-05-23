@@ -2,6 +2,9 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import {login} from '../../actions';
 import {Link} from 'react-router-dom';
+import { GoogleLogin } from 'react-google-login';
+import {googleRegLog} from '../../actions';
+import FontAwesome from 'react-fontawesome';
 
 class Login extends Component {
 
@@ -44,6 +47,10 @@ class Login extends Component {
         }
     }
 
+    responseGoogle = (response) => {
+        this.props.dispatch(googleRegLog(response.tokenId))
+    }
+
     render() {
         return (
             <div className="l_container">
@@ -62,14 +69,32 @@ class Login extends Component {
                     <button type="submit">Go in</button>
                     <Link to="/register"><button>Register now!</button></Link>
 
-                    {   
-                        !this.props.user.login.isAuth ?
-                            <div className="l_error">{this.state.error}</div>
-                        :
-                            null
-                    }
-
+                    
                 </form>
+                <div>
+                    <GoogleLogin
+                        clientId="945274229124-5astasev3jr15rohtv5a4l24g5qmubki.apps.googleusercontent.com"
+                        onSuccess={this.responseGoogle}
+                        style={{background:'rgb(220, 78, 65)',
+                        display: 'block',
+                        fontSize: '20px',
+                        padding: '10px 52px',
+                        color: '#dddddd',
+                        fontWeight: '300',
+                        borderRadius: '3px',
+                        border: 'none',
+                        margin: '10px auto',
+                        width: '260px'}}>
+                        <FontAwesome name='google'/>
+                    </GoogleLogin>
+                </div>
+                {   
+                    !this.props.user.login.isAuth ?
+                        <div className="l_error">{this.state.error}</div>
+                    :
+                        null
+                }
+                    
             </div>
         );
     }

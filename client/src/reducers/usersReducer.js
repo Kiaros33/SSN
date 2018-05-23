@@ -3,6 +3,9 @@ export default function (state={},action) {
         case 'USER_LOGIN':
             return {...state,login:action.payload};
 
+        case 'GOOGLE_REG_LOG':
+            return {...state,login:action.payload};
+
         case 'USER_AUTH':
             return {...state,login:action.payload};
         

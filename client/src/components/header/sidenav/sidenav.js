@@ -3,7 +3,7 @@ import SideNav from 'react-simple-sidenav';
 import NavItems from './navItems'
 
 const Nav = (props) => {
-    
+
     return (
         <SideNav
             showNav={props.showNav}

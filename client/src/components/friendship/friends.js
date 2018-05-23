@@ -2,18 +2,32 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import {showFriends,deleteFriend} from '../../actions';
 import {Link} from 'react-router-dom';
+import Popup from 'reactjs-popup';
 
 
 
 class Friends extends Component {
 
-    
     componentWillMount() {
         this.props.dispatch(showFriends(this.props.user.login.id))
     }
 
-    delFr = (curUser,friend) =>{
+    countMessages = (val,arr) =>{
+        let overall = 0;
+        for (let i = 0; i < arr.length; i++) {
+            if (val===arr[i].from) {
+                overall+=1
+            }
+        }
+        if (overall===0) {
+            return null
+        }
+        return `(${overall})`
+    }
+
+    handleClick=(curUser,friend,close)=>{
         this.props.dispatch(deleteFriend(curUser,friend))
+        close();
     }
 
     renderUsers = (arr) => (
@@ -25,9 +39,23 @@ class Friends extends Component {
                         </div>
                         <div className="pot_friend_nn">{item.nickname}</div>
                         <Link to={`private/${item._id}`} className="btn_to_chat">
-                            Chat
+                            Chat{this.countMessages(item._id,this.props.user.friends.messages)}
                         </Link>
-                        <button className="d_fr_btn" onClick={()=>this.delFr(this.props.user.login.id,item._id)}>-</button> 
+                        <Popup
+                            trigger={<button className="d_fr_btn">-</button>}
+                            modal
+                            contentStyle={{background:'rgb(233, 228, 228)',width:'280px',height:'160px'}}
+                            closeOnDocumentClick
+                        >
+                            {close => (
+                            <div>
+                                <div>Delete {item.nickname} from friends?</div>
+                                <button className='conf_delete' onClick={()=>this.handleClick(this.props.user.login.id,item._id,close)}>Delete</button>
+                                <button className='conf_delete' onClick={close}>Cancel</button>
+                            </div>
+                            )}
+                            
+                        </Popup>
                     </div>
                 </div>
             ))

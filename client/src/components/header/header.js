@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import FontAwesome from 'react-fontawesome';
 import {Link} from 'react-router-dom';
 import Nav from './sidenav/sidenav';
@@ -17,7 +18,6 @@ class Header extends Component {
         else{
             this.setState({showNav:true})
         }
-        
     }
 
     render() {
@@ -44,4 +44,11 @@ class Header extends Component {
     }
 }
 
-export default Header;
+const mapStateToProps = (state) => {
+    return {
+        user: state.user,
+        chat: state.chat
+    }
+}
+
+export default connect(mapStateToProps)(Header);

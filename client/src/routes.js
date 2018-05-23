@@ -11,6 +11,7 @@ import Requests from './components/friendship/requests';
 import Home from './components/home/home';
 import Private from './components/chat/private';
 import Search from './containers/friendship/search';
+import fourOFour from './components/error/fourOFour';
 
 
 const Routes = () => (
@@ -25,6 +26,7 @@ const Routes = () => (
             <Route path="/search" exact component={Auth(Search,true)}/>
             <Route path="/requests" exact component={Auth(Requests,true)}/>
             <Route path="/private/:conv" exact component={Auth(Private,true)}/>
+            <Route path="/"  component={Auth(fourOFour,true)}/>
         </Switch>
     </Layout>
 );

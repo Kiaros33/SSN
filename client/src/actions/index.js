@@ -159,41 +159,11 @@ export function clearReg(){
 }
 
 
+/*============= CHAT ==============*/
 
-// CHAT SHIT!!!!!!!!!!!!!!!!!!!!!
-
-// export function enterChat(user1Id,user2Id){
-//     const room = user1Id>user2Id ? user1Id + user2Id : user2Id + user1Id;
-
-//     const socket = openSocket('http://192.168.1.39:3001');
-
-//     socket.on('connect',function(){
-
-//         console.log(`User connected to a socket`);
-
-//         socket.emit('join',room,function(err){
-//             if (err) {
-//                alert(err) 
-//             }
-//             else{
-//                 console.log(`New user connected to room ${room}`)
-//             }
-//         })
-//     });
-
-//     const request = axios.get(`/api/enterChat?room=${room}`)
-//     .then(response=>response.data);
-
-//     return{
-//         type:'ENTER_CHAT',
-//         payload:request
-//     }
-// }
-
-
-export function loadInitialData(room){
+export function loadInitialData(room,user){
     return (dispatch) => {
-        axios.get(`/api/loadInitialData?room=${room}`)
+        axios.get(`/api/loadInitialData?room=${room}&user=${user}`)
         .then(({data})=>{
             let response = {
                 success:true,
@@ -209,7 +179,38 @@ export function loadInitialData(room){
     }
 }
 
-export const addItem = (data) => ({
+export const addItem = (message) => ({
     type: "ADD_ITEM",
-    payload: data
+    payload: message
 })
+
+export function readMessage(message){
+    return (dispatch) => {
+        axios.post(`/api/readMessage`,{message})
+        .then(({data})=>{
+            let response = {
+                data
+            }
+
+            dispatch({
+                type:'READ_MSG',
+                payload:response
+            })
+        })
+        
+    }
+}
+
+
+/*============= GOOGLE ==============*/
+
+export function googleRegLog(token) {
+    const request = axios.post(`/api/googleRegLog`,{token})
+    .then(response=>response.data);
+
+    return {
+        type:'GOOGLE_REG_LOG',
+        payload:request
+    }
+    
+}
