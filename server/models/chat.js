@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 
+//Message model
 const messageSchema = mongoose.Schema({
     roomId:{
         type:String,

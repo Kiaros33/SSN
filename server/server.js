@@ -13,20 +13,28 @@ const fs = require('fs');
 const formidable = require('formidable');
 const axios = require('axios');
 
-
+//Express on
 const app = express();
+
+//Create through http for socketIO
 const server = http.createServer(app);
+
+//Connect socketIO
 const io = socketIO(server);
 
+//Set mongoose promise
 mongoose.Promise = global.Promise;
+
+//Connect to DB
 mongoose.connect(config.DATABASE);
 
+//Set additional middleware
 app.use(bodyParser.json());
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'client/public')));
 
-/*SOCKET LOGIC HERE*/
 
+/*-------------------- SOCKET LOGIC -------------------- */
 //On new connection
 io.on('connection',(socket)=>{
     console.log('User connected to a socket')
@@ -60,11 +68,10 @@ io.on('connection',(socket)=>{
                 }
             })
         })
-
         cb();
     });
 
-
+    //On disconnect
     socket.on('disconnect',()=>{
         console.log('User disconnected')
     })
@@ -72,23 +79,26 @@ io.on('connection',(socket)=>{
 })
 
 
-/* ===================== CHAT REQUESTS ===================== */
+/*-------------------- CHAT REQUESTS -------------------- */
 
 // LOAD INITIAL DATA OF THE CHAT ROOM //
 app.get('/api/loadInitialData',(req,res)=>{
     let room = req.query.room;
     let user = req.query.user;
 
+    //Make all messages to user read
     Message.update({to:user,read:false,roomId:room},{read:true},{multi:true},(err,res)=>{
         if (err) return res.status(400).send(err);
     })
 
+    //Find all messages in the room and return
     Message.find({roomId: room}).sort({createdAt:'desc'}).limit(35).exec((err,msglist)=>{
         if (err) return res.status(400).send(err);
         msglist.reverse();
         res.send(msglist);
     })    
 })
+
 
 // MAKE MESSAGE READ //
 app.post('/api/readMessage',(req,res)=>{
@@ -102,7 +112,7 @@ app.post('/api/readMessage',(req,res)=>{
 
 
 
-/* =================== USER REQUESTS =================== */
+/*-------------------- USER REQUESTS -------------------- */
 
 // USER REGISTER //
 app.post('/api/register',(req,res)=>{
@@ -123,14 +133,19 @@ app.post('/api/register',(req,res)=>{
 // USER EDIT //
 app.post('/api/editUser',auth,(req,res)=>{
     let file = req.body.file;
+
+    //Find user by id
     User.findById(req.body.id,(err,user)=>{
         if (err) return res.status(400).json({
             err
         });
+
+        //Set changes
         user.nickname = req.body.nickname ? req.body.nickname : user.nickname;
         user.password = req.body.password ? req.body.password : user.password;
         user.image = req.body.image ? req.body.image : user.image;
         
+        //Apply changes
         user.save((err,user)=>{
             if (err) return res.json({
                 success:false,
@@ -156,12 +171,14 @@ app.post('/api/login',(req,res)=>{
     User.findOne({'email':req.body.email},(err,user)=>{
         if (!user) return res.json({isAuth:false,message:'E-mail not found'});
 
+        //Use custom method from user model to compare passwords
         user.comparePasswords(req.body.password,(err,isMatch)=>{
             if (!isMatch) return res.json({
                 isAuth:false,
                 message:'Wrong password'
             });
 
+            //Use custom method from user model to generate JWToken
             user.genToken((err,user)=>{
                 if (err) return res.status(400).send(err);
                 res.cookie('auth',user.token).json({
@@ -178,6 +195,8 @@ app.post('/api/login',(req,res)=>{
 
 // USER LOGOUT //
 app.get('/api/logout',auth,(req,res)=>{
+
+    //Use custom method from user model to delete JWToken
     req.user.delToken(req.token,(err,user)=>{
         if (err) return res.status(400).send(err);
         res.sendStatus(200)
@@ -216,6 +235,8 @@ app.get('/api/isAuth',auth,(req,res)=>{
 
 // USER IMAGE UPLOAD //
 app.post('/api/upload',(req,res)=>{
+
+    //Uploading file using formidable / set some restrictions
     const form = new formidable.IncomingForm();
     form.maxFileSize = 3 * 1024 * 1024;
     form.uploadDir = path.join(__dirname,'../client/public/uploads');
@@ -280,17 +301,20 @@ app.post('/api/friendInvite',auth,(req,res)=>{
     let userOutId = req.body.userOut;
     let userInId = req.body.userIn;
 
+    //Find user who make request to become friends
     User.findById(userOutId,(err,userOut)=>{
         if (err) return res.status(400).json({
             err
         });
 
         else{
+            //Find user who receive request to become friends
             User.findById(userInId,(err,userIn)=>{
                 if (err) return res.status(400).json({
                     err
                 });
 
+                //Can not be done if requested user equal to user that make request
                 else if (userOut._id.toString()===userIn._id.toString()) {
                     return res.json({
                         outReqSuccess:false,
@@ -298,6 +322,7 @@ app.post('/api/friendInvite',auth,(req,res)=>{
                     })
                 }
 
+                //Can not be done if already friends or request is exists  
                 else if (userOut.outRequests.includes(userInId) || userOut.friends.includes(userInId) || userOut.inRequests.includes(userInId)) {
                     return res.json({
                         outReqSuccess:false,
@@ -306,6 +331,7 @@ app.post('/api/friendInvite',auth,(req,res)=>{
                 }
 
                 else{
+                    //Add requests to both users
                     userIn.inRequests.push(userOutId)
                     userOut.outRequests.push(userInId);
                     userOut.save((err,userOut)=>{
@@ -364,18 +390,21 @@ app.post('/api/cancelOut',auth,(req,res)=>{
     let curUserId = req.body.curUser;
     let reqUserId = req.body.reqUser;
 
+    //Find user who wants to cancel request
     User.findById(curUserId,(err,curUser)=>{
         if (err) return res.status(400).json({
             err
         });
 
         else{
+            //Find user who have the request as incoming
             User.findById(reqUserId,(err,reqUser)=>{
                 if (err) return res.status(400).json({
                     err
                 });
 
                 else{
+                    //Remove requests from both users
                     reqUser.inRequests.pull(curUserId);
                     curUser.outRequests.pull(reqUserId);
                     curUser.save((err,curUser)=>{
@@ -411,18 +440,21 @@ app.post('/api/cancelIn',auth,(req,res)=>{
     let curUserId = req.body.curUser;
     let reqUserId = req.body.reqUser;
 
+    //Find user who wants to reject incoming request
     User.findById(curUserId,(err,curUser)=>{
         if (err) return res.status(400).json({
             err
         });
 
         else{
+            //Find user who made the request
             User.findById(reqUserId,(err,reqUser)=>{
                 if (err) return res.status(400).json({
                     err
                 });
 
                 else{
+                    //Remove requests from both users
                     reqUser.outRequests.pull(curUserId);
                     curUser.inRequests.pull(reqUserId);
                     curUser.save((err,curUser)=>{
@@ -458,6 +490,7 @@ app.post('/api/acceptIn',auth,(req,res)=>{
     let curUserId = req.body.curUser;
     let reqUserId = req.body.reqUser;
 
+    //Find user who wants to accept incoming request
     User.findById(curUserId,(err,curUser)=>{
         if (err) return res.status(400).json({
             err
@@ -465,13 +498,15 @@ app.post('/api/acceptIn',auth,(req,res)=>{
         
 
         else{
+            //Find user made the request
             User.findById(reqUserId,(err,reqUser)=>{
                 if (err) return res.status(400).json({
                     err
                 });
                 
                 else{
-                    
+                    //Add users to each other as friends
+                    //Remove old requests from both users
                     reqUser.friends.push(curUserId);
                     reqUser.outRequests.pull(curUserId);
                     curUser.friends.push(reqUserId);
@@ -511,23 +546,23 @@ app.post('/api/deleteFriend',auth,(req,res)=>{
     let curUserId = req.body.curUser;
     let friendId = req.body.friend;
 
+    //Find user who wants to delete a friend
     User.findById(curUserId,(err,curUser)=>{
         if (err) return res.status(400).json({
             err
         });
-        
 
         else{
+            //Find user wanted to be deleted
             User.findById(friendId,(err,friend)=>{
                 if (err) return res.status(400).json({
                     err
                 });
                 
                 else{
-                    
+                    //Remove from friends from both users
                     friend.friends.pull(curUserId);
                     curUser.friends.pull(friendId);
-                    
                     curUser.save((err,curUser)=>{
                         if (err) return res.json({
                             deleteFriend:false,
@@ -558,6 +593,8 @@ app.post('/api/deleteFriend',auth,(req,res)=>{
 
 // GET ALL FRIENDS OF CURRENT USER AND CHECK FOR NEW MESSAGES FROM THEM//
 app.get('/api/showFriends',(req,res)=>{
+
+    //Find user friends
     User.find({friends:req.query.userId}).select({nickname:1,image:1}).exec((err,friends)=>{
         if (err) {
             return res.json({
@@ -566,6 +603,7 @@ app.get('/api/showFriends',(req,res)=>{
             })
         }
         
+        //Check if have unread messages from them
         Message.find({to:req.query.userId,read:false}).select({from:1,_id:0}).exec((err,messages)=>{
             if (err) return res.status(400).json({
                 err
@@ -578,13 +616,17 @@ app.get('/api/showFriends',(req,res)=>{
     })
 })
 
-/* =================== GOOGLE LOGIN REQUEST =================== */
+/*-------------------- GOOGLE REQUESTS -------------------- */
 
 // GOOGLE SIGN-UP-IN //
 app.post('/api/googleRegLog',(req,res)=>{
+    
+    //Make verification on google
     axios.get(`https://www.googleapis.com/oauth2/v3/tokeninfo?id_token=${req.body.token}`)
     .then(({data})=>{
         if (data.email && data.email_verified) {
+            
+            //Find if user with that e-mail already exists
             User.findOne({'email':data.email},(err,user)=>{
                 if (!user) {
                     const user = new User({
@@ -593,11 +635,15 @@ app.post('/api/googleRegLog',(req,res)=>{
                         password: data.jti + data.at_hash,
                         image: data.picture
                     });
+
+                    //Register new user if not exists
                     user.save((err,user)=>{
                         if (err) return res.json({
                             success:false,
                             err
                         });
+
+                        //Login new user after registered
                         user.genToken((err,user)=>{
                             if (err) return res.status(400).send(err);
                             res.cookie('auth',user.token).json({
@@ -611,6 +657,7 @@ app.post('/api/googleRegLog',(req,res)=>{
                     })  
                 }
                 else{
+                    //Login user if already exists
                     user.genToken((err,user)=>{
                         if (err) return res.status(400).send(err);
                         res.cookie('auth',user.token).json({
@@ -629,7 +676,7 @@ app.post('/api/googleRegLog',(req,res)=>{
 
 
     
-/*====================LISTEN====================*/
+/*-------------------- LISTENING FOR REQUESTS -------------------- */
 server.listen(config.PORT,()=>{
     console.log(`SERVER:${config.PORT}`)
 })

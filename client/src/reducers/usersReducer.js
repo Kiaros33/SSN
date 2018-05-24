@@ -1,4 +1,5 @@
 export default function (state={},action) {
+    //User reducers
     switch (action.type) {
         case 'USER_LOGIN':
             return {...state,login:action.payload};

@@ -10,10 +10,12 @@ export default function (ComposedClass,reload) {
             loading:true
         }
 
+        //Check if user is authenticated
         componentWillMount() {
             this.props.dispatch(isAuth())
         }
         
+        //Redirect to login if not authenticated or to home if authenticated on new props
         componentWillReceiveProps(nextProps) {
             //check if Auth != 0
             this.setState({

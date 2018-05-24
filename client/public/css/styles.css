@@ -13,15 +13,28 @@ header {
     padding: 4px 4px 4px 4px
 }
 
+
+/*------------------------------------------ Home page styles ------------------------------------------*/
+h1.ssn{
+    font-size: 30px
+}
+
+#smile{
+    font-size: 100px
+}
+
+/*------------------------------------------ Placeholder for fixed header ------------------------------------------*/
 #place_holder{
     height:53px;
 }
 
+/*------------------------------------------ Page not found ------------------------------------------*/
 #fof{
     font-size: 30px;
     text-align: center;
 }
 
+/*------------------------------------------ Header and sideNav styles ------------------------------------------*/
 header .logo {
     text-align: center;
     font-size: 30px;
@@ -38,7 +51,6 @@ header .open_nav {
     margin-top: 4px;
     left:0px;
 }
-
 
 header .navItem {
     font-weight: 300;
@@ -58,9 +70,8 @@ header .navItem span {
     margin-right:10px;
 }
 
-/*-------------------------EDIT USER---------------------------------*/
 
-
+/*------------------------------------------ User edit styles ------------------------------------------*/
 .l_success{
     display:block;
     margin-top:10px;
@@ -107,7 +118,7 @@ header .navItem span {
 
 .l_container a{
     text-decoration: none;
-    color: #dddddd
+    color:#882e23;
 }
 
 .l_container button, .l_container .button{
@@ -123,24 +134,13 @@ header .navItem span {
     width: 260px;
 }
 
-.l_container .error{
-    color: rgb(243, 10, 10);
-    font-family: Roboto;
-}
-
 .l_container .l_error{
     color: rgb(243, 10, 10);
     font-family: Roboto;
 }
 
-/*++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
-/*+++++++++++++++++++++++++++ FORM +++++++++++++++++++++++++++*/
-/*++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
 
-/*=============================
-        FRIEND SEARCH
-===============================*/
-
+/*------------------------------------------ Friend search / Friends styles ------------------------------------------*/
 .pot_friend{
     font-family: Roboto;
     background: rgba(8, 206, 8, 0.438);
@@ -212,17 +212,7 @@ header .navItem span {
 }
 
 
-h1.ssn{
-    font-size: 30px
-}
-
-#smile{
-    font-size: 100px
-}
-
-
-/*CHAT STYLES*/
-
+/*------------------------------------------ Chat styles ------------------------------------------*/
 .chat_user1{
     font-family: Roboto;
     background: rgba(8, 206, 8, 0.438);
@@ -244,7 +234,8 @@ h1.ssn{
 .chat_user_text{
     max-width: 63%;
     text-align: left;
-    word-wrap: break-word
+    word-wrap: break-word;
+    padding-right: 5px;
 }
 
 .chat_user_link{
@@ -252,6 +243,7 @@ h1.ssn{
     text-align: left;
     word-wrap: break-word;
     color:#882e23;
+    padding-right: 5px;
 }
 
 .chat_user_link:hover{
@@ -301,7 +293,7 @@ h1.ssn{
 }
 
 
-
+/*------------------------------------------ Inputs ------------------------------------------*/
 ::-webkit-input-placeholder { /* Chrome/Opera/Safari */
     color: #d8d8d8;
   }
@@ -315,11 +307,8 @@ h1.ssn{
     color: #d8d8d8;
   }
 
-/*=============================
-            LOADER
-===============================*/
 
-
+/*------------------------------------------ Loader styles ------------------------------------------*/
 .loader,
 .loader:before,
 .loader:after {

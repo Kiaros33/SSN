@@ -1,6 +1,6 @@
 export default function (state={},action) {
+    //Chat reducers
     switch (action.type) {
-
         case 'READ_MSG':
             return {...state,readLast:action.payload};
         
@@ -8,6 +8,7 @@ export default function (state={},action) {
             return {...state,chat:action.payload};
         
         case 'ADD_ITEM':
+        //Add new message to current array of messages
             let arr = state.chat.data;
             arr.push(action.payload)
             return {...state};

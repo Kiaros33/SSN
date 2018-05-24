@@ -2,6 +2,7 @@ import React from 'react';
 import SideNav from 'react-simple-sidenav';
 import NavItems from './navItems'
 
+//Side nav common settings here
 const Nav = (props) => {
 
     return (
@@ -10,7 +11,7 @@ const Nav = (props) => {
             onHideNav={props.onNav}
             navStyle={{
                 background:'#242424',
-                maxWidth:'220px'
+                maxWidth:'150px'
             }}
         >
            <NavItems {...props}/>

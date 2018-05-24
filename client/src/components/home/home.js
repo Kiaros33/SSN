@@ -1,5 +1,6 @@
 import React from 'react';
 
+//Plain text on home page with smile :)
 const Home = () => (
     <div className="l_container">
         <h1 className="ssn">Simple Social Network</h1>

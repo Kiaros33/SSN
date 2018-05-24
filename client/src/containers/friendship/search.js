@@ -14,6 +14,7 @@ class Search extends Component {
         requested:false
     }
 
+    //Search input handler (controlled input)/ validation if e-mail format is correct
     handleInputSearch = (event) => {
         this.setState({
             searchFor:event.target.value
@@ -32,6 +33,7 @@ class Search extends Component {
         })
     }
 
+    //If no errors in e-mail - search for e-mail on submit
     submitForm = (event) => {
         event.preventDefault();
         if (!this.state.eError) {
@@ -40,6 +42,7 @@ class Search extends Component {
         
     }
 
+    //Send request on invite press
     handleInvite = () => {
         if (!this.state.eError && !this.state.error && this.state.potentialFriendImage && this.state.potentialFriendNickname) {
             this.props.dispatch(friendInvite(this.props.user.login.id,this.props.user.friendship.user.id));
@@ -50,10 +53,9 @@ class Search extends Component {
                 requested:true
             })
         }
-        
-        
     }
 
+    //Show user info if found
     componentWillReceiveProps(nextProps) {
         if (nextProps.user.friendship) {
             if (nextProps.user.friendship.message) {
@@ -78,8 +80,6 @@ class Search extends Component {
                 })
             }
         }
-        
-        
     }
     
 

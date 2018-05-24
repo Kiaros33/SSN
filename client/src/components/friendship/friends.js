@@ -8,10 +8,12 @@ import Popup from 'reactjs-popup';
 
 class Friends extends Component {
 
+    //Get all friends of current user
     componentWillMount() {
         this.props.dispatch(showFriends(this.props.user.login.id))
     }
 
+    //Count unread messages
     countMessages = (val,arr) =>{
         let overall = 0;
         for (let i = 0; i < arr.length; i++) {
@@ -25,11 +27,13 @@ class Friends extends Component {
         return `(${overall})`
     }
 
+    //Popup ... delete friend on delete pressed, close popup
     handleClick=(curUser,friend,close)=>{
         this.props.dispatch(deleteFriend(curUser,friend))
         close();
     }
 
+    //Map friends for render then
     renderUsers = (arr) => (
         arr.length !== 0 ?
             arr.map((item,i) =>(
@@ -63,12 +67,12 @@ class Friends extends Component {
             <div>You have no friends :(</div>
     )
 
+    //Show friends when loaded
     componentWillReceiveProps(nextProps) {
         if (nextProps.user.login.friends !== this.props.user.login.friends) {
             nextProps.dispatch(showFriends(nextProps.user.login.id));
         }
     }
-    
     
     render() {
         return (

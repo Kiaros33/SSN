@@ -1,17 +1,25 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import {getAllOut,cancelOut} from '../../actions';
+import {getAllIn,cancelIn,acceptIn} from '../../actions';
 
-class Outgoing extends Component {
+class Incoming extends Component {
 
+    //Get all incoming requests of current user
     componentWillMount() {
-        this.props.dispatch(getAllOut(this.props.user.login.id));
+        this.props.dispatch(getAllIn(this.props.user.login.id));
     }
 
-    cancelInvite= (curUser,reqUser) => {
-        this.props.dispatch(cancelOut(curUser,reqUser));
+    //Accept invite
+    acceptInvite = (curUser,reqUser) => {
+        this.props.dispatch(acceptIn(curUser,reqUser))
     }
-    
+
+    //Reject invite
+    cancelInvite = (curUser,reqUser) => {
+        this.props.dispatch(cancelIn(curUser,reqUser))
+    }
+
+    //Map incoming requests for render then
     renderUser = (arr) => (
         arr.length !== 0 ?
             arr.map((item,i) =>(
@@ -20,6 +28,7 @@ class Outgoing extends Component {
                         <div className='img_small' style={{backgroundImage:`url('${item.image}')`,backgroundSize:'cover', backgroundPosition:'center'}}>
                         </div>
                         <div className="pot_friend_nn">{item.nickname}</div>
+                        <button className="small_btn2" onClick={()=>this.acceptInvite(this.props.user.login.id,item._id)}>+</button> 
                         <button className="small_btn2" onClick={()=>this.cancelInvite(this.props.user.login.id,item._id)}>-</button> 
                     </div>
                 </div>
@@ -28,21 +37,20 @@ class Outgoing extends Component {
             <div>There are no active requests</div>
     )
 
-    
+    //Show incoming requests when loaded
     componentWillReceiveProps(nextProps) {
-        if (nextProps.user.login.outRequests !== this.props.user.login.outRequests) {
-            nextProps.dispatch(getAllOut(nextProps.user.login.id));
+        if (nextProps.user.login.inRequests !== this.props.user.login.inRequests) {
+            nextProps.dispatch(getAllIn(nextProps.user.login.id));
         }
     }
-
 
     render() {
         return (
             <div className="l_container">
-                <h2>Outgoing requests</h2>
+                <h2>Incoming requests</h2>
                 {
-                    this.props.user.outRequests && this.props.user.outRequests.users?
-                    this.renderUser(this.props.user.outRequests.users)
+                    this.props.user.inRequests && this.props.user.inRequests.users?
+                    this.renderUser(this.props.user.inRequests.users)
                     :
                     null
                         
@@ -53,11 +61,10 @@ class Outgoing extends Component {
     }
 }
 
-
-const mapStateToProps = (state) => {
+ const mapStateToProps = (state) => {
     return {
         user: state.user
     }
 }
 
-export default connect(mapStateToProps)(Outgoing);
+export default connect(mapStateToProps)(Incoming);

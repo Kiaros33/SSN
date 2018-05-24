@@ -4,6 +4,8 @@ import {Link} from 'react-router-dom';
 import { connect } from 'react-redux';
 
 const NavItems = ({user}) => {
+    
+    //List of Navigation items with properties
     const items = [
         {
             type:'navItem',
@@ -65,7 +67,7 @@ const NavItems = ({user}) => {
         }
     ]
 
-
+    //Formalize each item
     const splitElements = (item,i) => (
         <div key={i} className={item.type}>
             <Link to={item.link}>
@@ -75,6 +77,7 @@ const NavItems = ({user}) => {
         </div>
     )
 
+    //Map items to formalize and render then (check for authentication to show specified items also)
     const showItems = () => (
         user.login ?
             items.map((item,i)=>{

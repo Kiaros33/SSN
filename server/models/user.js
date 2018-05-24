@@ -4,6 +4,7 @@ const jwt = require('jsonwebtoken');
 const config = require('../config/config').get(process.env.NODE_ENV);
 const SALT_I = 10;
 
+//User model with validation
 const userSchema = mongoose.Schema({
     email:{
         type:String,
@@ -61,6 +62,7 @@ const userSchema = mongoose.Schema({
 
 },{timestamps:true})
 
+//genSalt and hash password before save
 userSchema.pre('save', function (next) {
     var user = this;
     if (user.isModified('password')) {
@@ -79,6 +81,7 @@ userSchema.pre('save', function (next) {
     }
 });
 
+//Compare usual password with existing hashed password
 userSchema.methods.comparePasswords = function(candidate,cb){
     bcrypt.compare(candidate,this.password,function(err,isMatch){
         if (err) return cb(err);
@@ -86,6 +89,7 @@ userSchema.methods.comparePasswords = function(candidate,cb){
     })
 };
 
+//Genereate JWToken
 userSchema.methods.genToken = function(cb){
     var user = this;
     var token = jwt.sign(user._id.toHexString(),config.SECRET);
@@ -97,6 +101,7 @@ userSchema.methods.genToken = function(cb){
     })
 };
 
+//Find user by token 
 userSchema.statics.findByToken = function(token,cb) {
     var user = this;
     jwt.verify(token,config.SECRET,function (err,decoded) {
@@ -107,6 +112,7 @@ userSchema.statics.findByToken = function(token,cb) {
     })
 };
 
+//Delete token
 userSchema.methods.delToken = function(token,cb) {
     var user = this;
     user.update({$unset:{token:1}},(err,user)=>{

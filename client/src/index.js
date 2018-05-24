@@ -8,6 +8,7 @@ import ReduxThunk from 'redux-thunk';
 import Routes from "./routes";
 import reducers from "./reducers";
 
+//Apply middleware and create store
 const createStoreWithMiddleware = applyMiddleware(promiseMiddleware,ReduxThunk)(createStore)
 
 

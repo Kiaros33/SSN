@@ -1,7 +1,10 @@
 import axios from 'axios';
 
-/*============= USER ==============*/
 
+/*------------------------------------------ USER ACTIONS ------------------------------------------*/
+
+
+// Login //
 export function login({email,password}){
 
     const request = axios.post('/api/login',{email,password})
@@ -13,6 +16,8 @@ export function login({email,password}){
     }
 }
 
+
+// Register with JWT //
 export function register(user) {
     const request = axios.post(`/api/register`,user)
     .then(response=>response.data);
@@ -21,9 +26,10 @@ export function register(user) {
         type:'USER_REGISTER',
         payload:request
     }
-    
 }
 
+
+// Check is Auth //
 export function isAuth(){
 
     const request = axios.get('/api/isAuth')
@@ -35,6 +41,8 @@ export function isAuth(){
     }
 }
 
+
+// Edit user //
 export function editUser(user){
     let file = user.file;
     let fileName = user.fileName;
@@ -66,6 +74,8 @@ export function editUser(user){
     }
 }
 
+
+// Search for friend by e-mail //
 export function friendSearch(email){
     const request = axios.get(`/api/friendSearch?email=${email}`)
     .then(response=>response.data);
@@ -75,6 +85,8 @@ export function friendSearch(email){
     }
 }
 
+
+// Invite friend //
 export function friendInvite(userOut,userIn){
     const request = axios.post(`/api/friendInvite`,{userOut,userIn})
     .then(response=>response.data);
@@ -84,6 +96,8 @@ export function friendInvite(userOut,userIn){
     }
 }
 
+
+// Get all outgoing requests //
 export function getAllOut(userId){
     const request = axios.get(`/api/getAllOut?userId=${userId}`)
     .then(response=>response.data);
@@ -93,6 +107,8 @@ export function getAllOut(userId){
     }
 }
 
+
+// Get all incoming requests //
 export function getAllIn(userId){
     const request = axios.get(`/api/getAllIn?userId=${userId}`)
     .then(response=>response.data);
@@ -102,6 +118,8 @@ export function getAllIn(userId){
     }
 }
 
+
+// Cancel outgoing request //
 export function cancelOut(curUser,reqUser){
     const request = axios.post(`/api/cancelOut`,{curUser,reqUser})
     .then(response=>response.data);
@@ -111,6 +129,8 @@ export function cancelOut(curUser,reqUser){
     }
 }
 
+
+// Reject incoming request //
 export function cancelIn(curUser,reqUser){
     const request = axios.post(`/api/cancelIn`,{curUser,reqUser})
     .then(response=>response.data);
@@ -120,6 +140,8 @@ export function cancelIn(curUser,reqUser){
     }
 }
 
+
+// Accept incoming request (become friends) //
 export function acceptIn(curUser,reqUser){
     const request = axios.post(`/api/acceptIn`,{curUser,reqUser})
     .then(response=>response.data);
@@ -129,6 +151,8 @@ export function acceptIn(curUser,reqUser){
     }
 }
 
+
+// Delete user from friends //
 export function deleteFriend(curUser,friend){
     const request = axios.post(`/api/deleteFriend`,{curUser,friend})
     .then(response=>response.data);
@@ -139,6 +163,7 @@ export function deleteFriend(curUser,friend){
 }
 
 
+// Get all friends of current user //
 export function showFriends(userId){
     const request = axios.get(`/api/showFriends?userId=${userId}`)
     .then(response=>response.data);
@@ -148,6 +173,8 @@ export function showFriends(userId){
     }
 }
 
+
+// Clear registration form //
 export function clearReg(){
     return{
         type:'CLEAR_REG',
@@ -159,8 +186,10 @@ export function clearReg(){
 }
 
 
-/*============= CHAT ==============*/
+/*------------------------------------------ CHAT ACTIONS ------------------------------------------*/
 
+
+// Load last 35 messages in room //
 export function loadInitialData(room,user){
     return (dispatch) => {
         axios.get(`/api/loadInitialData?room=${room}&user=${user}`)
@@ -174,16 +203,19 @@ export function loadInitialData(room,user){
                 type:'LOAD_MSGS',
                 payload:response
             })
-        })
-        
+        }) 
     }
 }
 
+
+// Add new message to the current room //
 export const addItem = (message) => ({
     type: "ADD_ITEM",
     payload: message
 })
 
+
+// Mark message as read //
 export function readMessage(message){
     return (dispatch) => {
         axios.post(`/api/readMessage`,{message})
@@ -191,19 +223,19 @@ export function readMessage(message){
             let response = {
                 data
             }
-
             dispatch({
                 type:'READ_MSG',
                 payload:response
             })
-        })
-        
+        })  
     }
 }
 
 
-/*============= GOOGLE ==============*/
+/*------------------------------------------ GOOGLE ACTIONS ------------------------------------------*/
 
+
+// Register and sign-in //
 export function googleRegLog(token) {
     const request = axios.post(`/api/googleRegLog`,{token})
     .then(response=>response.data);
@@ -212,5 +244,4 @@ export function googleRegLog(token) {
         type:'GOOGLE_REG_LOG',
         payload:request
     }
-    
 }

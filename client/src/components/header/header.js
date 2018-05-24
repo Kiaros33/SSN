@@ -10,6 +10,7 @@ class Header extends Component {
         showNav:false
     }
 
+    //Close or show nav depending on current state
     onNav = ()=>{
         const navState = this.state.showNav;
         if (navState) {
@@ -20,6 +21,7 @@ class Header extends Component {
         }
     }
 
+    //Render nav and header with a link to home page
     render() {
         return (
             <div>
@@ -46,8 +48,7 @@ class Header extends Component {
 
 const mapStateToProps = (state) => {
     return {
-        user: state.user,
-        chat: state.chat
+        user: state.user
     }
 }
 

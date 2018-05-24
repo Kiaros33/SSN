@@ -13,6 +13,7 @@ class Register extends PureComponent {
         pError:'Password is required'
     }
 
+    //E-mail input handler (controlled input) / client-side simple validation on fly
     handleInputEmail = (event) => {
         this.setState({
             email:event.target.value
@@ -28,9 +29,9 @@ class Register extends PureComponent {
                 })
             }
         })
-        
     }
 
+    //Password input handler (controlled input) / client-side simple validation on fly
     handleInputPassword = (event) => {
         this.setState({
             password:event.target.value
@@ -73,6 +74,7 @@ class Register extends PureComponent {
         })
     }
 
+    //Nickname input handler (controlled input)
     handleInputNickname = (event) => {
         this.setState({
             nickname:event.target.value
@@ -90,6 +92,7 @@ class Register extends PureComponent {
         })
     }
 
+    //Try to register new user on submit
     submitForm = (event) => {
         event.preventDefault();
         this.props.dispatch(register({
@@ -99,6 +102,7 @@ class Register extends PureComponent {
             }));
     }
 
+    //Login if registered
     redirectOnSuccess = () => {
         this.props.dispatch(login({
             email:this.state.email,
@@ -106,6 +110,7 @@ class Register extends PureComponent {
             }));
     }
 
+    //Notificate user if registration failed
     stayOnError = () => {
         if(this.props.user.register && this.props.user.register.err){
             if (this.props.user.register.err.code === 11000) {
@@ -118,13 +123,13 @@ class Register extends PureComponent {
         }
     }
 
+    //Clear inputs on unmount
     componentWillUnmount() {
         this.props.dispatch(clearReg());
     }
     
 
     render() {
-        console.log(this.props)
         return (
             <div className="l_container">
                 

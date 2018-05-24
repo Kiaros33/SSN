@@ -14,18 +14,21 @@ class Login extends Component {
         error:''
     }
 
+    //E-mail input handler (controlled input)
     handleInputEmail = (event) => {
         this.setState({
             email:event.target.value
         })
     }
 
+    //Password input handler (controlled input)
     handleInputPassword = (event) => {
         this.setState({
             password:event.target.value
         })
     }
 
+    //Send e-mail and password to server on submit
     submitForm = (event) => {
         event.preventDefault();
         this.props.dispatch(login({
@@ -34,19 +37,16 @@ class Login extends Component {
             }));
     }
 
+    //Show error message on failed attempt to login
     componentWillReceiveProps(nextProps) {
         if(!nextProps.user.login.isAuth){
             this.setState({
                 error:nextProps.user.login.message
             })
         }
-        else{
-            setTimeout(()=>{
-                this.props.history.push('/')
-            },1000);
-        }
     }
 
+    //Standard response from google with user info (if try to login through google)
     responseGoogle = (response) => {
         this.props.dispatch(googleRegLog(response.tokenId))
     }

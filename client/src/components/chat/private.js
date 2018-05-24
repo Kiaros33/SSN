@@ -5,7 +5,7 @@ import io from 'socket.io-client';
 import moment from 'moment-js';
 import FontAwesome from 'react-fontawesome';
 
-
+//Variables for multiple usage 
 let socket
 let room
 
@@ -21,7 +21,7 @@ class Private extends Component {
         room = user1Id > user2Id ? user1Id + user2Id : user2Id + user1Id;
 
         //Connecting to socket
-        socket = io('http://192.168.1.39:3001');
+        socket = io(':3001');
         socket.on('connect',function(){
 
             console.log(`User connected to a socket`);
@@ -55,27 +55,27 @@ class Private extends Component {
         });
     }
     
-
-
     state = {
         text:'',
         messages:'-'
     }
 
+    //Scroll to the last element
     scrollToBottom = () => {
         this.el.scrollIntoView({behavior:'smooth'})
     }
 
+    //Scroll on update
     componentDidUpdate() {
         this.scrollToBottom();
     }
 
-
+    //Disconnect on unmount
     componentWillUnmount() {
         socket.disconnect();
     }
     
-    
+    //Send standard message, clear textarea
     submitForm = (event) => {
         event.preventDefault();
         socket.emit('message', {
@@ -96,12 +96,14 @@ class Private extends Component {
 
     }
 
+    //Controllled textarea handler (should be uncontrolled??)
     handleInputText = (event) => {
         this.setState({
             text:event.target.value
         })
     }
 
+    //Prevent line break on 'Enter' / Submit on 'Enter'
     onEnterPress = (event) => {
         if(event.keyCode === 13 && event.shiftKey === false) {
             event.preventDefault();
@@ -109,6 +111,7 @@ class Private extends Component {
         }
     }
 
+    //Map messages for render then
     fetchData = (arr) => {
         if (arr === '-') {
             return(
@@ -157,6 +160,7 @@ class Private extends Component {
         }
     }
 
+    //Update messages on new message 
     componentWillReceiveProps(nextProps) {
         if(nextProps.chat.chat.data){
             this.setState({
@@ -165,6 +169,7 @@ class Private extends Component {
         }
     }
 
+    //Send location message
     sendLocHandler = () => {
         if (!navigator.geolocation) {
             return alert('Your browser does not support geolocation')

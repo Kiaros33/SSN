@@ -3,6 +3,7 @@ import axios from 'axios';
 
 const Logout = (props) => {
 
+    //Logout bypassing redux...Push to login page
     axios.get(`/api/logout`)
     .then(request=>{
         setTimeout(() => {

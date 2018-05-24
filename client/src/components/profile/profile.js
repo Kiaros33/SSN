@@ -16,13 +16,14 @@ class Profile extends PureComponent {
         iError:''
     }
 
+    //Nickname input handler (controlled input)
     handleInputNickname = (event) => {
         this.setState({
             nickname:event.target.value
         })
     }
 
-
+    //Password input handler (controlled input) / Client-side simple validation on the fly
     handleInputPassword = (event) => {
         this.setState({
             password:event.target.value
@@ -71,6 +72,7 @@ class Profile extends PureComponent {
         })
     }
 
+    //Image upload handler / Size and type validation
     handleInputImage = (event) => {
         this.setState({
             file:event.target.files[0]
@@ -94,20 +96,24 @@ class Profile extends PureComponent {
         }
     }
 
+    //Try to save user changes on submit
     submitForm = (event) => {
         event.preventDefault();
-        if(!this.state.iError && !this.state.error && !this.state.eError && !this.state.pError){
+        if(!this.state.iError && !this.state.error && !this.state.pError){
             this.props.dispatch(editUser({
                 id:this.state.id,
                 nickname:this.state.nickname,
                 password:this.state.password,
+                //Image name as user id and original extension to save in user model
                 image:this.state.file ? '/uploads/'+ this.state.id + '.' + this.state.file.name.split('.')[1] : '',
+                //File and filename to upload on server
                 file:this.state.file ? this.state.file : '',
                 fileName: this.state.file ? this.state.id + '.' + this.state.file.name.split('.')[1] : ''
             }))
         }
     }
 
+    //If changes accepted - clear inputs/notificate user
     componentWillReceiveProps(nextProps) {
         if(nextProps.user.login.success === true){
             this.setState({
