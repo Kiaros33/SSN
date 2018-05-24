@@ -31,7 +31,7 @@ mongoose.connect(config.DATABASE);
 //Set additional middleware
 app.use(bodyParser.json());
 app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'client/public')));
+app.use(express.static('client/build'));
 
 
 /*-------------------- SOCKET LOGIC -------------------- */
