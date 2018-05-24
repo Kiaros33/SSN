@@ -35,7 +35,8 @@ io.on('connection',(socket)=>{
     socket.on('join',(room,cb)=>{
         socket.join(room);
         
-        socket.on('message',(message,cb)=>{
+        //On plain message
+        socket.on('message',(message)=>{
             const msg = new Message(message);
             msg.save((err,msg)=>{
                 if (err) {
@@ -46,6 +47,20 @@ io.on('connection',(socket)=>{
                 }
             })
         })
+
+        //On location message
+        socket.on('createLocationMessage',(message)=>{
+            const msg = new Message(message);
+            msg.save((err,msg)=>{
+                if (err) {
+                    return err
+                }
+                else{
+                    io.to(room).emit('locationBack',msg);
+                }
+            })
+        })
+
         cb();
     });
 
@@ -57,11 +72,9 @@ io.on('connection',(socket)=>{
 })
 
 
+/* ===================== CHAT REQUESTS ===================== */
 
-
-
-/* ===================== CHAT SHIT ===================== */
-// LOAD INITIAL DATA OF THE CHAT ROOM//
+// LOAD INITIAL DATA OF THE CHAT ROOM //
 app.get('/api/loadInitialData',(req,res)=>{
     let room = req.query.room;
     let user = req.query.user;
@@ -77,7 +90,7 @@ app.get('/api/loadInitialData',(req,res)=>{
     })    
 })
 
-
+// MAKE MESSAGE READ //
 app.post('/api/readMessage',(req,res)=>{
     Message.findByIdAndUpdate(req.body.message._id,{read:true},(err,message)=>{
         if (err) return res.status(400).send(err);
@@ -86,19 +99,6 @@ app.post('/api/readMessage',(req,res)=>{
         })
     })
 })
-
-// app.get('/api/ifUnread',(req,res)=>{
-//     console.log(req.query)
-//     Message.findOne({to:req.query.userId,read:false},(err,msg)=>{
-//         if (err) return res.status(400).send(err);
-//         if (!msg) return res.json({
-//             unread:false
-//         })
-//         res.json({
-//             unread:true
-//         })
-//     })
-// })
 
 
 
@@ -578,7 +578,7 @@ app.get('/api/showFriends',(req,res)=>{
     })
 })
 
-////////////////////////////////////////////////////////////////////////////////////////////////////
+/* =================== GOOGLE LOGIN REQUEST =================== */
 
 // GOOGLE SIGN-UP-IN //
 app.post('/api/googleRegLog',(req,res)=>{

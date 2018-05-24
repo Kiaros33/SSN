@@ -2,7 +2,8 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import {loadInitialData,addItem,readMessage} from '../../actions';
 import io from 'socket.io-client';
-import moment from 'moment-js'
+import moment from 'moment-js';
+import FontAwesome from 'react-fontawesome';
 
 
 let socket
@@ -42,6 +43,14 @@ class Private extends Component {
                         dispatch(readMessage(message));
                     }
                 })
+
+                //On receiving location
+                socket.on('locationBack',function(message){
+                    dispatch(addItem(message));
+                    if (user1Id === message.to) {
+                        dispatch(readMessage(message));
+                    }
+                })
             });
         });
     }
@@ -53,7 +62,7 @@ class Private extends Component {
         messages:'-'
     }
 
-    scrollToBottom=()=>{
+    scrollToBottom = () => {
         this.el.scrollIntoView({behavior:'smooth'})
     }
 
@@ -93,6 +102,13 @@ class Private extends Component {
         })
     }
 
+    onEnterPress = (event) => {
+        if(event.keyCode === 13 && event.shiftKey === false) {
+            event.preventDefault();
+            event.target.form.dispatchEvent(new Event("submit", {cancelable: true}));
+        }
+    }
+
     fetchData = (arr) => {
         if (arr === '-') {
             return(
@@ -109,18 +125,30 @@ class Private extends Component {
                 arr.map((item,i) =>(
                     item.from === this.props.user.login.id ?
                     <div className="chat_user1" key={i}>
-                        <div className="chat_user1_info">
+                        <div className="chat_user_info">
                             <div className="chat_date">{moment(item.createdAt).format('hh:mm')}</div>
                             <div className='chat_img' style={{backgroundImage:`url('${item.image}')`,backgroundSize:'cover', backgroundPosition:'center'}}></div>
-                            <div className="chat_user1_text">{item.message.text}</div>
+                            {
+                                item.location? 
+                                    <a className="chat_user_link" target="_blank" href={item.message.text}>I am on GoogleMaps <FontAwesome name='map'/></a>
+                                :
+                                    <div className="chat_user_text">{item.message.text}</div>
+                            }
+                            
                         </div>
                     </div>
                     :
                     <div className="chat_user2" key={i}>
-                        <div className="chat_user2_info">
-                            <div className="chat_user2_text">{item.message.text}</div>
-                            <div className='chat_img' style={{backgroundImage:`url('${item.image}')`,backgroundSize:'cover', backgroundPosition:'center'}}></div>
+                        <div className="chat_user_info">
                             <div className="chat_date">{moment(item.createdAt).format('hh:mm')}</div>
+                            <div className='chat_img' style={{backgroundImage:`url('${item.image}')`,backgroundSize:'cover', backgroundPosition:'center'}}></div>
+                            {
+                                item.location? 
+                                    <a className="chat_user_link" target="_blank" href={item.message.text}>I am on GoogleMaps <FontAwesome name='map'/></a>
+                                :
+                                    <div className="chat_user_text">{item.message.text}</div>
+                            }
+                            
                         </div>
                     </div>
     
@@ -136,6 +164,27 @@ class Private extends Component {
             })
         }
     }
+
+    sendLocHandler = () => {
+        if (!navigator.geolocation) {
+            return alert('Your browser does not support geolocation')
+        }
+
+        navigator.geolocation.getCurrentPosition((position)=>{
+            socket.emit('createLocationMessage',{
+                roomId:room,
+                message:{
+                    text:`https://www.google.com/maps?q=${position.coords.latitude},${position.coords.longitude}`
+                },
+                to:this.props.location.pathname.split('/')[2],
+                from:this.props.user.login.id,
+                image:this.props.user.login.image,
+                location:true
+            });
+        }, ()=>{
+            alert('Unable to fetch location.')
+        })
+    }
     
 
     render() {
@@ -144,9 +193,10 @@ class Private extends Component {
                 {this.fetchData(this.state.messages)}
                 
                 <form onSubmit={this.submitForm}>
-                    <input type="text" placeholder="Enter a message" value={this.state.text} onChange={this.handleInputText}/>
+                    <textarea rows="2" placeholder="Enter a message" value={this.state.text} onChange={this.handleInputText} onKeyDown={this.onEnterPress}/>
                     <button type="submit">Send</button>
                 </form>
+                <button onClick={this.sendLocHandler}>My loc</button>
                 <div ref={el => { this.el = el; }}/>
             </div>
         );

@@ -233,7 +233,7 @@ h1.ssn{
     background: rgba(8, 169, 206, 0.438);
 }
 
-.chat_user1_info{
+.chat_user_info{
     display:flex;
     margin: 5px;
     max-width: 100%;
@@ -241,22 +241,22 @@ h1.ssn{
     align-items: center;
 }
 
-.chat_user2_info{
-    display:flex;
-    margin: 5px;
-    max-width: 100%;
-    padding: 5px 0 5px 0;
-    align-items: center;
-}
-
-.chat_user1_text{
-    width: 100%;
+.chat_user_text{
+    max-width: 63%;
     text-align: left;
+    word-wrap: break-word
 }
 
-.chat_user2_text{
-    width: 100%;
-    text-align: right;
+.chat_user_link{
+    max-width: 63%;
+    text-align: left;
+    word-wrap: break-word;
+    color:#882e23;
+}
+
+.chat_user_link:hover{
+    color:#3b2ac1;
+    text-decoration: underline;
 }
 
 .chat_date{
@@ -264,6 +264,7 @@ h1.ssn{
     border-radius: 10px;
     padding: 1px;
     background-color: #f403fb29;
+    max-width:17%
 }
 
 .chat_img{
@@ -272,9 +273,11 @@ h1.ssn{
     min-width: 80px;
     height: 80px;
     border-radius: 80px;
+    max-width:20%
 }
 
-.chat_container input {
+.chat_container textarea {
+    float: left;
     font-size: 20px;
     border-radius: 3px;
     border: 1px solid #c7c7c7;
@@ -282,7 +285,9 @@ h1.ssn{
     background: #f7f7f7;
     font-weight: 300;
     padding: 0 10px 0 10px;
-    width: 80%;
+    width: 79%;
+    height: 68.25px;
+    margin-bottom: 5px;
 }
 
 .chat_container button{
@@ -292,6 +297,7 @@ h1.ssn{
     font-weight: 300;
     border: none;
     width: 20%;
+    margin:0 0 1% 1%;
 }
 
 

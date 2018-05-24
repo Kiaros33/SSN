@@ -8,8 +8,8 @@ export default function (state={},action) {
             return {...state,chat:action.payload};
         
         case 'ADD_ITEM':
-        let arr = state.chat.data;
-        arr.push(action.payload)
+            let arr = state.chat.data;
+            arr.push(action.payload)
             return {...state};
         
         default:

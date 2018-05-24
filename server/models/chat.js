@@ -23,6 +23,10 @@ const messageSchema = mongoose.Schema({
         type:String,
         required:true
     },
+    location: {
+        type:Boolean,
+        default:false
+    },
     read: {
         type:Boolean,
         default:false
