@@ -31,7 +31,7 @@ mongoose.connect(config.DATABASE);
 //Set additional middleware
 app.use(bodyParser.json());
 app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'client/public')));
+app.use(express.static('client/build'));
 
 
 /*-------------------- SOCKET LOGIC -------------------- */
@@ -674,6 +674,11 @@ app.post('/api/googleRegLog',(req,res)=>{
     });
 })
 
+if(process.env.NODE_ENV === 'production'){
+    app.get('/*',(req,res)=>{
+        res.sendfile(path.resolve(__dirname,'../client','build','index.html'))
+    })
+}
 
     
 /*-------------------- LISTENING FOR REQUESTS -------------------- */
