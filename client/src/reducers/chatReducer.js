@@ -10,7 +10,9 @@ export default function (state={},action) {
         case 'ADD_ITEM':
         //Add new message to current array of messages
             let arr = state.chat.data;
-            arr.push(action.payload)
+            if (!arr.includes(action.payload)){
+                arr.push(action.payload)
+            }
             return {...state};
         
         default:
