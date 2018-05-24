@@ -12,9 +12,13 @@ const {auth} = require('./middleware/auth');
 const fs = require('fs');
 const formidable = require('formidable');
 const axios = require('axios');
+const aws = require('aws-sdk');
 
 //Express on
 const app = express();
+
+//Specify region for storage
+aws.config.region = 'us-east-1'
 
 //Create through http for socketIO
 const server = http.createServer(app);
@@ -685,3 +689,6 @@ if(process.env.NODE_ENV === 'production'){
 server.listen(config.PORT,()=>{
     console.log(`SERVER:${config.PORT}`)
 })
+
+/*-------------------- S3 STORAGE -------------------- */
+const S3_BUCKET = process.env.S3_BUCKET;

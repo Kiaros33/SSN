@@ -38,7 +38,7 @@ const userSchema = mongoose.Schema({
     },
     image:{
         type:String,
-        default:'/uploads/default-user-image.png'
+        default:'https://s3.amazonaws.com/ssn-data-images/default-user-image.png'
     },
     friends:{
         type:Array,
