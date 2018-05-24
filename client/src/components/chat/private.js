@@ -21,7 +21,7 @@ class Private extends Component {
         room = user1Id > user2Id ? user1Id + user2Id : user2Id + user1Id;
 
         //Connecting to socket
-        socket = io('https://s-s-n.herokuapp.com/:80');
+        socket = io('https://aqueous-hollows-84293.herokuapp.com/:80');
         socket.on('connect',function(){
 
             console.log(`User connected to a socket`);
