@@ -46,6 +46,7 @@ export function isAuth(){
 export function editUser(user){
     let file = user.file;
     let fileName = user.fileName;
+    let oldImage = user.oldImage;
     const request = axios.post(`/api/editUser`,user)
 
     return (dispatch)=>{
@@ -53,10 +54,8 @@ export function editUser(user){
             let user = data;
             const fd = new FormData();
             fd.append('image',file,fileName);
-            let config = {
-                headers: {'Content-Type':'multipart/form-data'}
-            }
-            axios.post(`/api/upload`,fd,config)
+            fd.append('old',oldImage);
+            axios.post(`/api/upload`,fd)
             .then(({data})=>{
                 let response = {
                     success:true,

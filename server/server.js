@@ -245,12 +245,12 @@ app.post('/api/upload',upload.single('image'),(req,res,next)=>{
     let file = req.file
     if (!file) {
         return res.json({
-            success:true
+            addSuccess:true
         });
     }
     if (file.size>3145728) {
         return res.json({
-            success:false
+            addSuccess:false
         });
     }
     let s3 = new AWS.S3({
@@ -269,7 +269,7 @@ app.post('/api/upload',upload.single('image'),(req,res,next)=>{
     };
     s3.putObject(params, function(err, data) {
         if (err) return res.json({
-            success:false,
+            addSuccess:false,
             err
         }) 
         else {
@@ -278,9 +278,25 @@ app.post('/api/upload',upload.single('image'),(req,res,next)=>{
             } catch (err) {
                 console.log(err)
             }
-            return res.json({
-                success:true
-            });
+            if (file.originalname !== req.body.old.split('/')[5]) {
+                let paramsToDel = {
+                    Bucket:config.BUCKET_NAME,
+                    Key: 'uploads/' + req.body.old.split('/')[5]
+                }
+                s3.deleteObject(paramsToDel, function(err,data) {
+                    if (err) return res.json({
+                        addSuccess:true,
+                        deleteSuccess:false,
+                        err
+                    })
+                    else {
+                        return res.json({
+                            addSuccess:true,
+                            deleteSuccess:true
+                        });
+                    }
+                })
+            }
         }
     });
 

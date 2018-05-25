@@ -105,10 +105,11 @@ class Profile extends PureComponent {
                 nickname:this.state.nickname,
                 password:this.state.password,
                 //Image name as user id and original extension to save in user model
-                image:this.state.file ? 'https://s3.amazonaws.com/ssn-data-images/uploads/'+ this.state.id + '.' + this.state.file.name.split('.')[1] : '',
+                image:this.state.file ? 'https://s3.amazonaws.com/ssn-data-images/uploads/'+ this.state.id + this.state.file.size + '.' + this.state.file.name.split('.')[1] : '',
+                oldImage: this.props.user.login.image,
                 //File and filename to upload on server
                 file:this.state.file ? this.state.file : '',
-                fileName: this.state.file ? this.state.id + '.' + this.state.file.name.split('.')[1] : ''
+                fileName: this.state.file ? this.state.id + this.state.file.size + '.' + this.state.file.name.split('.')[1] : ''
             }))
         }
     }
