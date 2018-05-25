@@ -151,8 +151,16 @@ app.post('/api/editUser',auth,(req,res)=>{
         //Set changes
         user.nickname = req.body.nickname ? req.body.nickname : user.nickname;
         user.password = req.body.password ? req.body.password : user.password;
-        user.image = req.body.image ? req.body.image : user.image;
-        
+        user.image = req.body.image ? req.body.image : null
+        if(user.image){
+            //Change image of existing messages
+            Message.update({from:user._id},{image:user.image},{multi: true}, function(err,data){
+                if (err) return res.status(400).json({
+                    err
+                });
+            })
+        }
+
         //Apply changes
         user.save((err,user)=>{
             if (err) return res.json({
@@ -169,7 +177,6 @@ app.post('/api/editUser',auth,(req,res)=>{
                 image:user.image
             })
         })
-
     });
 });
 
