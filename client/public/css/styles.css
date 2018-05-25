@@ -277,19 +277,20 @@ header .navItem span {
     background: #f7f7f7;
     font-weight: 300;
     padding: 0 10px 0 10px;
-    width: 79%;
-    height: 68.25px;
+    width: 78.5%;
+    height: 69px;
     margin-bottom: 5px;
 }
 
 .chat_container button{
+    border-radius: 3px;
     font-size: 20px;
     background: rgb(60, 60, 60);
     color: #dddddd;
     font-weight: 300;
     border: none;
-    width: 20%;
-    margin:0 0 1% 1%;
+    width: 21%;
+    margin:0 0 5px 0.5%;
 }
 
 

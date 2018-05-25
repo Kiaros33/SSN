@@ -203,7 +203,7 @@ class Private extends Component {
                     <textarea rows="2" placeholder="Enter a message" value={this.state.text} onChange={this.handleInputText} onKeyDown={this.onEnterPress}/>
                     <button type="submit">Send</button>
                 </form>
-                <button onClick={this.sendLocHandler}>My loc</button>
+                <button onClick={this.sendLocHandler}>Loc</button>
                 <div ref={el => { this.el = el; }}/>
             </div>
         );

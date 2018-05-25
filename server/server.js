@@ -12,13 +12,17 @@ const {auth} = require('./middleware/auth');
 const fs = require('fs');
 const formidable = require('formidable');
 const axios = require('axios');
-const aws = require('aws-sdk');
+const AWS = require('aws-sdk');
+
+//Multer for make data readable
+const multer  = require('multer');
+const upload = multer({ dest: 'uploads/' })
 
 //Express on
 const app = express();
 
 //Specify region for storage
-aws.config.region = 'us-east-1'
+AWS.config.region = 'us-east-1'
 
 //Create through http for socketIO
 const server = http.createServer(app);
@@ -236,48 +240,87 @@ app.get('/api/isAuth',auth,(req,res)=>{
     })
 })
 
-
 // USER IMAGE UPLOAD //
-app.post('/api/upload',(req,res)=>{
-
-    //Uploading file using formidable / set some restrictions
-    const form = new formidable.IncomingForm();
-    form.maxFileSize = 3 * 1024 * 1024;
-    form.uploadDir = path.join(__dirname,'../client/public/uploads');
-
-    form.parse(req, (err, field, file)=>{
+app.post('/api/upload',upload.single('image'),(req,res,next)=>{
+    let file = req.file
+    if (!file) {
+        return res.json({
+            success:true
+        });
+    }
+    if (file.size>3145728) {
+        return res.json({
+            success:false
+        });
+    }
+    let s3 = new AWS.S3({
+        accessKeyId: config.IAM_USER_KEY,
+        secretAccessKey: config.IAM_USER_SECRET,
+        Bucket: config.BUCKET_NAME
+    });
+    let bodystream = fs.createReadStream(file.path);
+    let params = {
+        Bucket: config.BUCKET_NAME,
+        Key: file.destination + file.originalname,
+        Body: bodystream,
+        ContentType: file.mimetype,
+        CacheControl: "no-cache",
+        ACL:'public-read'
+    };
+    s3.putObject(params, function(err, data) {
         if (err) return res.json({
             success:false,
             err
-        })
+        }) 
+        else {
+            try {
+                fs.unlinkSync(file.path);
+            } catch (err) {
+                console.log(err)
+            }
+            return res.json({
+                success:true
+            });
+        }
     });
 
-    form.on('file', (field,file)=>{
-        if(file.type.split("/")[0] !== 'image'){
-            fs.rename(file.path,'new_path',(err)=>{
-                if (err) return res.json({
-                    success:false,
-                    err
-                })
-            });
-        }
-        else{
-            fs.rename(file.path,path.join(form.uploadDir,file.name),(err)=>{
-                if (err) return res.json({
-                    success:false,
-                    err
-                })
-            });
-        }
+    //Uploading file using formidable / set some restrictions
+    // const form = new formidable.IncomingForm();
+    // form.maxFileSize = 3 * 1024 * 1024;
+    // form.uploadDir = path.join(__dirname,'../client/public/uploads');
+
+    // form.parse(req, (err, field, file)=>{
+    //     if (err) return res.json({
+    //         success:false,
+    //         err
+    //     })
+    // });
+
+    // form.on('file', (field,file)=>{
+    //     if(file.type.split("/")[0] !== 'image'){
+    //         fs.rename(file.path,'new_path',(err)=>{
+    //             if (err) return res.json({
+    //                 success:false,
+    //                 err
+    //             })
+    //         });
+    //     }
+    //     else{
+    //         fs.rename(file.path,path.join(form.uploadDir,file.name),(err)=>{
+    //             if (err) return res.json({
+    //                 success:false,
+    //                 err
+    //             })
+    //         });
+    //     }
         
-    });
+    // });
 
-    form.on('end', ()=>{
-        res.json({
-            success:true
-        });
-    });
-
+    // form.on('end', ()=>{
+    //     res.json({
+    //         success:true
+    //     });
+    // });
 })
 
 // GET POTENTIAL FRIEND INFO BY E-MAIL //
@@ -690,5 +733,3 @@ server.listen(config.PORT,()=>{
     console.log(`SERVER:${config.PORT}`)
 })
 
-/*-------------------- S3 STORAGE -------------------- */
-const S3_BUCKET = process.env.S3_BUCKET;

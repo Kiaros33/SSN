@@ -53,8 +53,10 @@ export function editUser(user){
             let user = data;
             const fd = new FormData();
             fd.append('image',file,fileName);
-
-            axios.post(`/api/upload`,fd)
+            let config = {
+                headers: {'Content-Type':'multipart/form-data'}
+            }
+            axios.post(`/api/upload`,fd,config)
             .then(({data})=>{
                 let response = {
                     success:true,
