@@ -121,6 +121,7 @@ class Profile extends PureComponent {
                 nickname:'',
                 password:'',
                 message:'Changes Accepted',
+                file:'',
                 error:''
             })
         }
