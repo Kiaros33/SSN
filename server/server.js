@@ -151,8 +151,8 @@ app.post('/api/editUser',auth,(req,res)=>{
         //Set changes
         user.nickname = req.body.nickname ? req.body.nickname : user.nickname;
         user.password = req.body.password ? req.body.password : user.password;
-        user.image = req.body.image ? req.body.image : null
-        if(user.image){
+        user.image = req.body.image ? req.body.image : user.image
+        if(req.body.image){
             //Change image of existing messages
             Message.update({from:user._id},{image:user.image},{multi: true}, function(err,data){
                 if (err) return res.status(400).json({
