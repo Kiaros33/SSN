@@ -1,6 +1,8 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'react-redux';
-import {register,login,clearReg} from '../../actions';
+import {register,login} from '../../actions';
+import pValidator from '../../validation/password';
+import eValidator from 'email-validator'
 
 class Register extends PureComponent {
 
@@ -15,91 +17,99 @@ class Register extends PureComponent {
 
     //E-mail input handler (controlled input) / client-side simple validation on fly
     handleInputEmail = (event) => {
-        this.setState({
-            email:event.target.value
-        },()=>{
-            if(!this.state.email.match(/[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/)){
+        if(event.target.value !== ''){
+            if(!eValidator.validate(event.target.value)){
                 this.setState({
-                    eError: "E-mail is not valid so far"
+                    eError: 'E-mail is not valid so far'
                 })
             }
             else{
                 this.setState({
-                    eError: ""
+                    eError: ''
                 })
             }
+        }
+        else{
+            this.setState({
+                eError: 'E-mail is required'
+            })
+        }
+
+        this.setState({
+            email:event.target.value
         })
     }
 
     //Password input handler (controlled input) / client-side simple validation on fly
     handleInputPassword = (event) => {
+        if(event.target.value !== ''){
+            let validation = pValidator.validate(event.target.value,{list:true});
+
+            if(validation.length === 0){
+                this.setState({
+                    pError: ''
+                })
+            }
+            else{
+                let newError = 'Must contains: ';
+                for (let i = 0; i < validation.length; i++) {
+                    if (validation[i] === "min") {
+                        newError += "6 characters. "
+                    }
+                    if (validation[i] === "lowercase") {
+                        newError += "1 lower letter. "
+                    }
+                    if (validation[i] === "digits") {
+                        newError += "1 digit. "
+                    }
+                    if (validation[i] === "uppercase") {
+                        newError += "1 capital letter. "
+                    }  
+                }
+                this.setState({
+                    pError: newError
+                })
+
+            }
+        }
+        else{
+            this.setState({
+                pError: 'Password is required'
+            })
+        }
+
         this.setState({
             password:event.target.value
-        }, () => {
-            let defaultError = "Password must contains "
-            if(this.state.password.match(/[A-Z]/) == null){
-                let capError = "1 capital letter | ";
-                defaultError += capError;
-                this.setState({
-                    pError:defaultError
-                })
-            }
-            if (this.state.password.match(/[a-z]/) == null) {
-                let lowError = "1 lower letter | ";
-                defaultError += lowError;
-                this.setState({
-                    pError:defaultError
-                })
-            } 
-            if (this.state.password.match(/[0-9]/) == null) {
-                let digError = "1 digit | ";
-                defaultError += digError;
-                this.setState({
-                    pError:defaultError
-                })
-            } 
-            if (this.state.password.length < 6) {
-                let lenError = "6 characters |";
-                defaultError += lenError;
-                this.setState({
-                    pError:defaultError
-                })
-            }
-            if (defaultError === "Password must contains "){
-                this.setState({
-                    pError:''
-                })
-            }
-            
         })
     }
 
     //Nickname input handler (controlled input)
     handleInputNickname = (event) => {
+        if (event.target.value === "") {
+            this.setState({
+                nError:"Nickname is required"
+            })
+        }
+        else{
+            this.setState({
+                nError:""
+            })
+        }
         this.setState({
             nickname:event.target.value
-        },()=>{
-            if (this.state.nickname === "") {
-                this.setState({
-                    nError:"Nickname is required"
-                })
-            }
-            else{
-                this.setState({
-                    nError:""
-                })
-            }
         })
     }
 
     //Try to register new user on submit
     submitForm = (event) => {
         event.preventDefault();
-        this.props.dispatch(register({
-            nickname:this.state.nickname,
-            email:this.state.email,
-            password:this.state.password
+        if(!this.state.nError && !this.state.eError && !this.state.pError){
+            this.props.dispatch(register({
+                nickname:this.state.nickname,
+                email:this.state.email,
+                password:this.state.password
             }));
+        }
     }
 
     //Login if registered
@@ -112,22 +122,14 @@ class Register extends PureComponent {
 
     //Notificate user if registration failed
     stayOnError = () => {
-        if(this.props.user.register && this.props.user.register.err){
-            if (this.props.user.register.err.code === 11000) {
-                return (
-                    <div className="l_error">
-                        Sorry, but user with entered e-mail already exists
-                    </div>
-                )
-            }
-        }
+        if (this.props.user.register.response.data.code === 11000) {
+            return (
+                <div className="l_error">
+                    Sorry, but user with entered e-mail already exists
+                </div>
+            )
+        }   
     }
-
-    //Clear inputs on unmount
-    componentWillUnmount() {
-        this.props.dispatch(clearReg());
-    }
-    
 
     render() {
         return (
@@ -164,7 +166,7 @@ class Register extends PureComponent {
                     <button type="submit">Reg me</button>
                     
                     {   
-                        this.props.user.register && this.props.user.register.success ?
+                        this.props.user.register.success ?
                         this.redirectOnSuccess()
                         :
                         this.stayOnError()

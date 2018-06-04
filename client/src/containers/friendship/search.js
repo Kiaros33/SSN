@@ -9,34 +9,26 @@ class Search extends Component {
         searchFor:'',
         potentialFriendImage:'',
         potentialFriendNickname:'',
-        eError:'',
         error:'',
         requested:false
     }
 
-    //Search input handler (controlled input)/ validation if e-mail format is correct
+    //Search input handler (controlled input)
     handleInputSearch = (event) => {
+        if(event.target.value !== ""){
+            this.setState({
+                requested:false
+            })
+        }
         this.setState({
             searchFor:event.target.value
-        },()=>{
-            if(!this.state.searchFor.match(/[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/) 
-            && this.state.searchFor !== ''){
-                this.setState({
-                    eError: "E-mail is not valid so far"
-                })
-            }
-            else{
-                this.setState({
-                    eError: ""
-                })
-            }
         })
     }
 
-    //If no errors in e-mail - search for e-mail on submit
+    //Search for e-mail on submit
     submitForm = (event) => {
         event.preventDefault();
-        if (!this.state.eError) {
+        if (this.state.searchFor !== '') {
             this.props.dispatch(friendSearch(this.state.searchFor))
         }
         
@@ -44,7 +36,7 @@ class Search extends Component {
 
     //Send request on invite press
     handleInvite = () => {
-        if (!this.state.eError && !this.state.error && this.state.potentialFriendImage && this.state.potentialFriendNickname) {
+        if (!this.state.error && this.state.potentialFriendImage && this.state.potentialFriendNickname) {
             this.props.dispatch(friendInvite(this.props.user.login.id,this.props.user.friendship.user.id));
             this.setState({
                 searchFor:'',
@@ -57,32 +49,22 @@ class Search extends Component {
 
     //Show user info if found
     componentWillReceiveProps(nextProps) {
-        if (nextProps.user.friendship) {
-            if (nextProps.user.friendship.message) {
-                this.setState({
-                    potentialFriendImage:'',
-                    potentialFriendNickname:'',
-                    error:nextProps.user.friendship.message
-                })
-            }
-            if (nextProps.user.friendship.outReqSuccess===false) {
-                this.setState({
-                    potentialFriendImage:'',
-                    potentialFriendNickname:'',
-                    error:nextProps.user.friendship.outReqMessage
-                })
-            }
-            if (nextProps.user.friendship.searchSuccess && nextProps.user.friendship.user) {
-                this.setState({
-                    potentialFriendImage:nextProps.user.friendship.user.image,
-                    potentialFriendNickname:nextProps.user.friendship.user.nickname,
-                    error:''
-                })
-            }
+        if (nextProps.user.friendship.message) {
+            this.setState({
+                potentialFriendImage:'',
+                potentialFriendNickname:'',
+                error:nextProps.user.friendship.message
+            })
+        }
+        if (nextProps.user.friendship.searchSuccess && nextProps.user.friendship.user) {
+            this.setState({
+                potentialFriendImage:nextProps.user.friendship.user.image,
+                potentialFriendNickname:nextProps.user.friendship.user.nickname,
+                error:''
+            })
         }
     }
     
-
     render() {
         return (
             <div className="l_container">
@@ -90,9 +72,6 @@ class Search extends Component {
                 <form onSubmit={this.submitForm}>
                     <div className="form_element">
                         <input type="email" placeholder="Your friend e-mail" value={this.state.searchFor} onChange={this.handleInputSearch}/>
-                    </div>
-                    <div className="l_error">
-                        {this.state.eError}
                     </div>
                     <button type="submit">Search</button>
                     {
@@ -117,9 +96,6 @@ class Search extends Component {
                     }
                     
                 </form>
-                
-
-
             </div>
         );
     }

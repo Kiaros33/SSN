@@ -1,87 +1,22 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import {loadInitialData,addItem,readMessage} from '../../actions';
-import io from 'socket.io-client';
-import moment from 'moment-js';
+import moment from 'moment';
 import FontAwesome from 'react-fontawesome';
 
-//Variables for multiple usage 
-let socket
-let room
-
-class Private extends Component {
-
-    constructor(props) {
-        super(props);
-        const {dispatch} = this.props;
-
-        //Calculate room number
-        let user1Id = this.props.user.login.id;
-        let user2Id = this.props.location.pathname.split('/')[2];
-        room = user1Id > user2Id ? user1Id + user2Id : user2Id + user1Id;
-
-        //Connecting to socket
-
-        socket = io('https://aqueous-hollows-84293.herokuapp.com');
-        // socket = io('http://192.168.1.39:3001');
-        socket.on('connect',function(){
-
-            console.log(`User connected to a socket`);
-
-            //Join the room
-            socket.emit('join',room,function(err){
-                if (err) {
-                    alert(err) 
-                }
-                else{
-                    console.log(`New user connected to room ${room}`);
-                    dispatch(loadInitialData(room,user1Id));
-                }
-
-                //On receiving message
-                socket.on('messageBack',function(message){
-                    dispatch(addItem(message));
-                    if (user1Id === message.to) {
-                        dispatch(readMessage(message));
-                    }
-                })
-
-                //On receiving location
-                socket.on('locationBack',function(message){
-                    dispatch(addItem(message));
-                    if (user1Id === message.to) {
-                        dispatch(readMessage(message));
-                    }
-                })
-            });
-        });
-    }
+class Chat extends Component {
     
     state = {
         text:'',
         messages:'-'
     }
 
-    //Scroll to the last element
-    scrollToBottom = () => {
-        this.el.scrollIntoView({behavior:'smooth'})
-    }
-
-    //Scroll on update
-    componentDidUpdate() {
-        this.scrollToBottom();
-    }
-
-    //Disconnect on unmount
-    componentWillUnmount() {
-        socket.disconnect();
-    }
+    
     
     //Send standard message, clear textarea
     submitForm = (event) => {
         event.preventDefault();
-        socket.emit('message', {
-            roomId:room,
+        this.props.socket.emit('message', {
+            roomId:this.props.room,
             message:{
                 text:this.state.text
             },
@@ -122,7 +57,7 @@ class Private extends Component {
         }
         else if(arr.length === 0){
             return(
-                <div>That chat is empty</div>
+                <div>This chat is empty</div>
             )
         }
         else{
@@ -131,7 +66,7 @@ class Private extends Component {
                     item.from === this.props.user.login.id ?
                     <div className="chat_user1" key={i}>
                         <div className="chat_user_info">
-                            <div className="chat_date">{moment(item.createdAt).format('hh:mm')}</div>
+                            <div className="chat_date">{moment(item.createdAt).format('HH:mm')}</div>
                             <div className='chat_img' style={{backgroundImage:`url('${item.image}')`,backgroundSize:'cover', backgroundPosition:'center'}}></div>
                             {
                                 item.location? 
@@ -145,7 +80,7 @@ class Private extends Component {
                     :
                     <div className="chat_user2" key={i}>
                         <div className="chat_user_info">
-                            <div className="chat_date">{moment(item.createdAt).format('hh:mm')}</div>
+                            <div className="chat_date">{moment(item.createdAt).format('HH:mm')}</div>
                             <div className='chat_img' style={{backgroundImage:`url('${item.image}')`,backgroundSize:'cover', backgroundPosition:'center'}}></div>
                             {
                                 item.location? 
@@ -164,11 +99,9 @@ class Private extends Component {
 
     //Update messages on new message 
     componentWillReceiveProps(nextProps) {
-        if(nextProps.chat.chat.data){
-            this.setState({
-                messages: nextProps.chat.chat.data
-            })
-        }
+        this.setState({
+            messages: nextProps.chat.chat.data
+        })
     }
 
     //Send location message
@@ -178,8 +111,8 @@ class Private extends Component {
         }
 
         navigator.geolocation.getCurrentPosition((position)=>{
-            socket.emit('createLocationMessage',{
-                roomId:room,
+            this.props.socket.emit('createLocationMessage',{
+                roomId:this.props.room,
                 message:{
                     text:`https://www.google.com/maps?q=${position.coords.latitude},${position.coords.longitude}`
                 },
@@ -204,7 +137,6 @@ class Private extends Component {
                     <button type="submit">Send</button>
                 </form>
                 <button onClick={this.sendLocHandler}>Loc</button>
-                <div ref={el => { this.el = el; }}/>
             </div>
         );
     }
@@ -217,4 +149,4 @@ const mapStateToProps = (state) => {
     }
 }
 
-export default connect(mapStateToProps)(Private);
+export default connect(mapStateToProps)(Chat);

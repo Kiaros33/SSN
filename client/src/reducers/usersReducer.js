@@ -1,52 +1,69 @@
-export default function (state={},action) {
+import Constant from '../constants/actionTypes';
+
+export default function (state={
+    register:{
+        response:{
+            data:{
+                type:'',
+                code:'',
+                message:''
+            }
+        }
+    },
+    friends:{
+        friends:[]
+    },
+    friendship:{
+        searchSuccess:false,
+        user:''
+    },
+    requests:{
+        outReq:[],
+        inReq:[]
+    }
+},action) {
     //User reducers
     switch (action.type) {
-        case 'USER_LOGIN':
+        case Constant.login:
             return {...state,login:action.payload};
 
-        case 'GOOGLE_REG_LOG':
+        case Constant.google:
             return {...state,login:action.payload};
 
-        case 'USER_AUTH':
+        case Constant.is_auth:
             return {...state,login:action.payload};
         
-        case 'FRIEND_SEARCH':
+        case Constant.search:
             return {...state,friendship:action.payload};
 
-        case 'FRIEND_INVITE':
+        case Constant.invite:
             return {...state,friendship:action.payload};
 
-        case 'USER_EDIT':
+        case Constant.edit:
             return {...state,login:action.payload};
 
-        case 'UPLOAD':
-            return {...state,file:action.payload};
-
-        case 'USER_REGISTER':
+        case Constant.register:
             return {...state,register:action.payload}
 
-        case 'CLEAR_REG':
-            return {...state,register:action.payload}
+        case Constant.friend_requests:
+            return {...state,requests:action.payload}
 
-        case 'GET_ALL_OUT':
-            return {...state,outRequests:action.payload}
+        case Constant.requests_clear:
+            return {...state,requests:action.payload}
 
-        case 'GET_ALL_IN':
-            return {...state,inRequests:action.payload}
-
-        case 'GET_ALL_FRIENDS':
+        case Constant.friends:
             return {...state,friends:action.payload}
 
-        case 'DELETE_FRIEND':
+        case Constant.friends_clear:
+            return {...state,friends:action.payload}
+
+        case Constant.delete:
             return {...state,login:action.payload}
 
-        case 'CANCEL_OUT_REQ':
+        case Constant.cancel:
             return {...state,login:action.payload}
 
-        case 'CANCEL_IN_REQ':
-            return {...state,login:action.payload}
-
-        case 'ACCEPT_IN_REQ':
+        case Constant.accept:
             return {...state,login:action.payload}
     
         default:

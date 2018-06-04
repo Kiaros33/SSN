@@ -5,6 +5,7 @@ import {Link} from 'react-router-dom';
 import { GoogleLogin } from 'react-google-login';
 import {googleRegLog} from '../../actions';
 import FontAwesome from 'react-fontawesome';
+const config = require('../../config').get(process.env.NODE_ENV);
 
 class Login extends Component {
 
@@ -34,7 +35,7 @@ class Login extends Component {
         this.props.dispatch(login({
             email:this.state.email,
             password:this.state.password
-            }));
+        }));
     }
 
     //Show error message on failed attempt to login
@@ -54,7 +55,7 @@ class Login extends Component {
     render() {
         return (
             <div className="l_container">
-                <form action="" onSubmit={this.submitForm}>
+                <form onSubmit={this.submitForm}>
 
                     <h2>Log-in</h2>
 
@@ -73,7 +74,7 @@ class Login extends Component {
                 </form>
                 <div>
                     <GoogleLogin
-                        clientId="945274229124-5astasev3jr15rohtv5a4l24g5qmubki.apps.googleusercontent.com"
+                        clientId={config.GOOGLE_KEY}
                         onSuccess={this.responseGoogle}
                         style={{background:'rgb(220, 78, 65)',
                         display: 'block',

@@ -1,8 +1,20 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const emailValidator = require('email-validator');
+const passwordValidator = require('password-validator');
 const config = require('../config/config').get(process.env.NODE_ENV);
 const SALT_I = 10;
+
+//Create password validation schema
+const pValidator = new passwordValidator();
+pValidator
+.is().min(6)                                               // Minimum length 6
+.is().max(100)                                             // Maximum length 100
+.has().uppercase()                                         // Must have uppercase letters
+.has().lowercase()                                         // Must have lowercase letters
+.has().digits()                                            // Must have digits
+.has().not().spaces()                                      // Should not have spaces
 
 //User model with validation
 const userSchema = mongoose.Schema({
@@ -13,21 +25,16 @@ const userSchema = mongoose.Schema({
         unique:1,
         validate:{
             validator: function(email){
-                return email.match(/[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/)
+                return emailValidator.validate(email)
             }
         }
     },
     password:{
         type:String,
         required:true,
-        minlength:6,
         validate:{
             validator: function(password) {
-                return password.length >= 6 // Length
-                    && !~password.indexOf(" ") // No spaces
-                    && password.match(/[A-Z]/) != null // One uppercase
-                    && password.match(/[a-z]/) != null // One lowercase
-                    && password.match(/[0-9]/) != null; // One numerical digit
+                return pValidator.validate(password)
             }
         }
     },

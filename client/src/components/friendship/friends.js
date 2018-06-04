@@ -1,16 +1,19 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import {showFriends,deleteFriend} from '../../actions';
+import {showFriends,deleteFriend,clearFriendList} from '../../actions';
 import {Link} from 'react-router-dom';
 import Popup from 'reactjs-popup';
-
-
 
 class Friends extends Component {
 
     //Get all friends of current user
     componentWillMount() {
-        this.props.dispatch(showFriends(this.props.user.login.id))
+        this.props.show(this.props.user.login.id);
+    }
+
+    //Clear list of friends
+    componentWillUnmount() {
+        this.props.clear();
     }
 
     //Count unread messages
@@ -25,12 +28,6 @@ class Friends extends Component {
             return null
         }
         return `(${overall})`
-    }
-
-    //Popup ... delete friend on delete pressed, close popup
-    handleClick=(curUser,friend,close)=>{
-        this.props.dispatch(deleteFriend(curUser,friend))
-        close();
     }
 
     //Map friends for render then
@@ -54,7 +51,7 @@ class Friends extends Component {
                             {close => (
                             <div>
                                 <div>Delete {item.nickname} from friends?</div>
-                                <button className='conf_delete' onClick={()=>this.handleClick(this.props.user.login.id,item._id,close)}>Delete</button>
+                                <button className='conf_delete' onClick={()=>this.props.delete(this.props.user.login.id,item._id,close)}>Delete</button>
                                 <button className='conf_delete' onClick={close}>Cancel</button>
                             </div>
                             )}
@@ -70,7 +67,7 @@ class Friends extends Component {
     //Show friends when loaded
     componentWillReceiveProps(nextProps) {
         if (nextProps.user.login.friends !== this.props.user.login.friends) {
-            nextProps.dispatch(showFriends(nextProps.user.login.id));
+            nextProps.show(nextProps.user.login.id);
         }
     }
     
@@ -78,13 +75,7 @@ class Friends extends Component {
         return (
             <div className="l_container">
                 <h2>Your Friends:</h2>
-                {
-                    this.props.user.friends && this.props.user.friends.friends?
-                    this.renderUsers(this.props.user.friends.friends)
-                    :
-                    null
-                        
-                }
+                {this.renderUsers(this.props.user.friends.friends)}
                 <hr/>
             </div>
         );
@@ -97,4 +88,19 @@ const mapStateToProps = (state) => {
     }
 }
 
-export default connect(mapStateToProps)(Friends);
+const mapDispatchToProps = (dispatch, ownProps) => {
+    return {
+        show: (id) => {
+            dispatch(showFriends(id))
+        },
+        delete: (id,friend,close) => {
+            dispatch(deleteFriend(id,friend));
+            close()
+        },
+        clear: () => {
+            dispatch(clearFriendList());
+        },
+    }
+}
+
+export default connect(mapStateToProps,mapDispatchToProps)(Friends);

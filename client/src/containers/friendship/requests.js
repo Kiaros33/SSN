@@ -1,15 +1,37 @@
-import React from 'react';
+import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import Outgoing from '../../components/friendship/outgoing';
 import Incoming from '../../components/friendship/incoming';
+import {getAllReq,clearAllReq,cancelIn,acceptIn,cancelOut} from '../../actions';
+
 
 //Container for outgoing and incoming
-const Requests = () => (
-    <div>
-        <Outgoing/>
-        <Incoming/>
-    </div>
-);
+class Requests extends Component {
+
+    componentWillMount() {
+        this.props.loadAll(this.props.user.login.id)
+    }
+
+    componentWillUnmount() {
+        this.props.clearAll()
+    }
+
+    componentWillReceiveProps(nextProps) {
+        if (this.props.user.login !== nextProps.user.login) {
+            this.props.loadAll(this.props.user.login.id)
+        }
+    }
+    
+    
+    render() {
+        return (
+            <div>
+                <Outgoing cancelOut={this.props.cancelOut}/>
+                <Incoming cancelIn={this.props.cancelIn} acceptIn={this.props.accept}/>
+            </div>
+        );
+    }
+}
 
 const mapStateToProps = (state) => {
     return {
@@ -17,5 +39,25 @@ const mapStateToProps = (state) => {
     }
 }
 
-export default connect(mapStateToProps)(Requests);
+const mapDispatchToProps = (dispatch) => {
+    return {
+        loadAll: (id) => {
+            dispatch(getAllReq(id));
+        },
+        clearAll: () => {
+            dispatch(clearAllReq());
+        },
+        accept: (curUser,reqUser) => {
+            dispatch(acceptIn(curUser,reqUser))
+        },
+        cancelOut: (curUser,reqUser) => {
+            dispatch(cancelOut(curUser,reqUser))
+        },
+        cancelIn: (curUser,reqUser) => {
+            dispatch(cancelIn(curUser,reqUser))
+        }
+    }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Requests);
 

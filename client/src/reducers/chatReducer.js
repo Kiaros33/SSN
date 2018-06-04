@@ -1,13 +1,19 @@
-export default function (state={},action) {
+import Constant from '../constants/actionTypes';
+
+export default function (state={
+    chat:{
+        data:'-'
+    }
+},action) {
     //Chat reducers
     switch (action.type) {
-        case 'READ_MSG':
+        case Constant.read:
             return {...state,readLast:action.payload};
         
-        case 'LOAD_MSGS':
+        case Constant.load:
             return {...state,chat:action.payload};
         
-        case 'ADD_ITEM':
+        case Constant.add:
         //Add new message to current array of messages
             let arr = state.chat.data;
             if (!arr.includes(action.payload)){

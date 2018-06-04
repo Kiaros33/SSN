@@ -9,9 +9,9 @@ import Logout from './components/profile/logout';
 import Friends from './components/friendship/friends';
 import Requests from './containers/friendship/requests';
 import Home from './components/home/home';
-import Private from './components/chat/private';
 import Search from './containers/friendship/search';
 import fourOFour from './components/error/fourOFour';
+import ChatWrapper from './containers/chat/chatWrapper'
 
 
 const Routes = () => (
@@ -25,7 +25,7 @@ const Routes = () => (
             <Route path="/friends" exact component={Auth(Friends,true)}/>
             <Route path="/search" exact component={Auth(Search,true)}/>
             <Route path="/requests" exact component={Auth(Requests,true)}/>
-            <Route path="/private/:conv" exact component={Auth(Private,true)}/>
+            <Route path="/private/:conv" exact component={Auth(ChatWrapper,true)}/>
 
             {/* Show page not found if path does not match with any above*/}
             <Route path="/" component={Auth(fourOFour,true)}/>

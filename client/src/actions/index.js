@@ -1,5 +1,5 @@
 import axios from 'axios';
-
+import Constant from '../constants/actionTypes';
 
 /*------------------------------------------ USER ACTIONS ------------------------------------------*/
 
@@ -7,24 +7,24 @@ import axios from 'axios';
 // Login //
 export function login({email,password}){
 
-    const request = axios.post('/api/login',{email,password})
+    const request = axios.post(`/api/login/`,{email,password})
     .then(response=>response.data);
 
     return {
-        type:'USER_LOGIN',
-        payload:request
+        type: Constant.login,
+        payload: request
     }
 }
 
 
 // Register with JWT //
 export function register(user) {
-    const request = axios.post(`/api/register`,user)
+    const request = axios.post(`/api/users/${user.email}`,{nickname:user.nickname,password:user.password})
     .then(response=>response.data);
 
     return {
-        type:'USER_REGISTER',
-        payload:request
+        type: Constant.register,
+        payload: request
     }
 }
 
@@ -32,156 +32,140 @@ export function register(user) {
 // Check is Auth //
 export function isAuth(){
 
-    const request = axios.get('/api/isAuth')
+    const request = axios.get('/api/users/user')
     .then(response=>response.data);
 
     return {
-        type:'USER_AUTH',
-        payload:request
+        type: Constant.is_auth,
+        payload: request
     }
 }
 
 
 // Edit user //
 export function editUser(user){
-    let file = user.file;
-    let fileName = user.fileName;
-    let oldImage = user.oldImage;
-    const request = axios.post(`/api/editUser`,user)
 
-    return (dispatch)=>{
-        request.then(({data})=>{
-            let user = data;
-            const fd = new FormData();
-            fd.append('image',file,fileName);
-            fd.append('old',oldImage);
-            axios.post(`/api/upload`,fd)
-            .then(({data})=>{
-                let response = {
-                    success:true,
-                    isAuth:true,
-                    id:user.id,
-                    nickname:user.nickname,
-                    email:user.email,
-                    image:user.image
-                }
+    let fd = new FormData();
+    fd.append('file',user.file,user.fileName);
+    fd.append('nickname',user.nickname);
+    fd.append('image',user.image);
+    fd.append('oldImage',user.oldImage);
+    fd.append('password',user.password);
 
-                dispatch({
-                    type:'USER_EDIT',
-                    payload:response
-                })
-            })
-        })
+    const request = axios.put(`/api/users/${user.id}`,fd)
+    .then(response=>response.data);
+
+    return {
+        type: Constant.edit,
+        payload: request
     }
 }
 
 
 // Search for friend by e-mail //
 export function friendSearch(email){
-    const request = axios.get(`/api/friendSearch?email=${email}`)
+    const request = axios.get(`/api/users/${email}`)
     .then(response=>response.data);
     return {
-        type:'FRIEND_SEARCH',
-        payload:request
+        type: Constant.search,
+        payload: request
     }
 }
 
 
 // Invite friend //
 export function friendInvite(userOut,userIn){
-    const request = axios.post(`/api/friendInvite`,{userOut,userIn})
+    const request = axios.post(`/api/users/${userOut}/friend-requests/${userIn}`)
     .then(response=>response.data);
     return {
-        type:'FRIEND_INVITE',
-        payload:request
+        type: Constant.invite,
+        payload: request
     }
 }
 
 
-// Get all outgoing requests //
-export function getAllOut(userId){
-    const request = axios.get(`/api/getAllOut?userId=${userId}`)
+// Get all requests //
+export function getAllReq(userId){
+    const request = axios.get(`/api/users/${userId}/friend-requests`)
     .then(response=>response.data);
     return {
-        type:'GET_ALL_OUT',
-        payload:request
+        type: Constant.friend_requests,
+        payload: request
     }
 }
 
-
-// Get all incoming requests //
-export function getAllIn(userId){
-    const request = axios.get(`/api/getAllIn?userId=${userId}`)
-    .then(response=>response.data);
+// Clear all requests //
+export function clearAllReq(){
     return {
-        type:'GET_ALL_IN',
-        payload:request
+        type: Constant.requests_clear,
+        payload: {
+            inReq:[],
+            outReq:[]
+        }
     }
 }
 
 
 // Cancel outgoing request //
 export function cancelOut(curUser,reqUser){
-    const request = axios.post(`/api/cancelOut`,{curUser,reqUser})
+    const request = axios.delete(`/api/users/${curUser}/out-requests/${reqUser}`)
     .then(response=>response.data);
     return {
-        type:'CANCEL_OUT_REQ',
-        payload:request
+        type: Constant.cancel,
+        payload: request
     }
 }
 
 
 // Reject incoming request //
 export function cancelIn(curUser,reqUser){
-    const request = axios.post(`/api/cancelIn`,{curUser,reqUser})
+    const request = axios.delete(`/api/users/${curUser}/in-requests/${reqUser}`)
     .then(response=>response.data);
     return {
-        type:'CANCEL_IN_REQ',
-        payload:request
+        type: Constant.cancel,
+        payload: request
     }
 }
 
 
 // Accept incoming request (become friends) //
 export function acceptIn(curUser,reqUser){
-    const request = axios.post(`/api/acceptIn`,{curUser,reqUser})
+    const request = axios.post(`/api/users/${curUser}/friends/${reqUser}`)
     .then(response=>response.data);
     return {
-        type:'ACCEPT_IN_REQ',
-        payload:request
+        type: Constant.accept,
+        payload: request
     }
 }
 
 
 // Delete user from friends //
 export function deleteFriend(curUser,friend){
-    const request = axios.post(`/api/deleteFriend`,{curUser,friend})
+    const request = axios.delete(`/api/users/${curUser}/friends/${friend}`)
     .then(response=>response.data);
     return {
-        type:'DELETE_FRIEND',
-        payload:request
+        type: Constant.delete,
+        payload: request
     }
 }
 
 
 // Get all friends of current user //
 export function showFriends(userId){
-    const request = axios.get(`/api/showFriends?userId=${userId}`)
+    const request = axios.get(`/api/users/${userId}/friends`)
     .then(response=>response.data);
     return {
-        type:'GET_ALL_FRIENDS',
-        payload:request
+        type: Constant.friends,
+        payload: request
     }
 }
 
-
-// Clear registration form //
-export function clearReg(){
-    return{
-        type:'CLEAR_REG',
-        payload:{
-            success:false,
-            user:null
+// Clear list of friends //
+export function clearFriendList(){
+    return {
+        type: Constant.friends_clear,
+        payload: {
+            friends:[]
         }
     }
 }
@@ -191,9 +175,9 @@ export function clearReg(){
 
 
 // Load last 35 messages in room //
-export function loadInitialData(room,user){
+export function loadInitialData(id,user){
     return (dispatch) => {
-        axios.get(`/api/loadInitialData?room=${room}&user=${user}`)
+        axios.get(`/api/chats/${id}?user=${user}`)
         .then(({data})=>{
             let response = {
                 success:true,
@@ -201,8 +185,8 @@ export function loadInitialData(room,user){
             }
 
             dispatch({
-                type:'LOAD_MSGS',
-                payload:response
+                type: Constant.load,
+                payload: response
             })
         }) 
     }
@@ -211,22 +195,22 @@ export function loadInitialData(room,user){
 
 // Add new message to the current room //
 export const addItem = (message) => ({
-    type: "ADD_ITEM",
+    type: Constant.add,
     payload: message
 })
 
 
 // Mark message as read //
-export function readMessage(message){
+export function readMessage(id){
     return (dispatch) => {
-        axios.post(`/api/readMessage`,{message})
+        axios.put(`/api/messages/${id}`)
         .then(({data})=>{
             let response = {
                 data
             }
             dispatch({
-                type:'READ_MSG',
-                payload:response
+                type: Constant.read,
+                payload: response
             })
         })  
     }
@@ -238,11 +222,11 @@ export function readMessage(message){
 
 // Register and sign-in //
 export function googleRegLog(token) {
-    const request = axios.post(`/api/googleRegLog`,{token})
+    const request = axios.post(`/api/google`,{token})
     .then(response=>response.data);
 
     return {
-        type:'GOOGLE_REG_LOG',
-        payload:request
+        type: Constant.google,
+        payload: request
     }
 }
