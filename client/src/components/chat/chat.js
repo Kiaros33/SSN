@@ -10,8 +10,6 @@ class Chat extends Component {
         messages:'-'
     }
 
-    
-    
     //Send standard message, clear textarea
     submitForm = (event) => {
         event.preventDefault();

@@ -1,8 +1,8 @@
 const config = {
 
     production:{
-        GOOGLE_KEY: process.env.GOOGLE_KEY,
-        SOCKET: process.env.SOCKET
+        GOOGLE_KEY: '945274229124-5astasev3jr15rohtv5a4l24g5qmubki.apps.googleusercontent.com',
+        SOCKET: 'https://aqueous-hollows-84293.herokuapp.com'
     },
 
     default:{

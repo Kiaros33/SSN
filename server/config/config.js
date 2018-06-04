@@ -13,9 +13,9 @@ const config = {
         SECRET: 'NOTSECRET93PASSWORD',
         DATABASE: 'mongodb://localhost:27017/SSN',
         PORT: 3001,
-        BUCKET_NAME: 'ssn-data-images',
-        IAM_USER_KEY: 'AKIAJJWAXJWZU7MMMATQ',
-        IAM_USER_SECRET: '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'
+        BUCKET_NAME: '',
+        IAM_USER_KEY: '',
+        IAM_USER_SECRET: ''
     }
 }
 
