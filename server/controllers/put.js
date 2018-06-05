@@ -40,6 +40,7 @@ module.exports = function(app){
             err.message = 'You are not allowed to do that';
             err.name = 'Forbidden_Error';
             err.status = 403;
+            fs.unlinkSync(file.path);
             return next(err);
         }
 

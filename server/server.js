@@ -88,3 +88,5 @@ server.listen(config.PORT,()=>{
     console.log(`SERVER:${config.PORT}`)
 })
 
+
+ module.exports.app = app;
