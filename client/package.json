@@ -24,12 +24,29 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test --env=jsdom",
+    "test": "jest",
     "eject": "react-scripts eject"
   },
   "proxy": {
     "/api/": {
       "target": "http://localhost:3001"
     }
+  },
+  "jest": {
+    "setupTestFrameworkScriptFile": "<rootDir>tests/enzyme_config.js"
+  },
+  "devDependencies": {
+    "babel-jest": "^23.0.1",
+    "babel-preset-env": "^1.7.0",
+    "babel-preset-react": "^6.24.1",
+    "babel-preset-stage-0": "^6.24.1",
+    "enzyme": "^3.3.0",
+    "enzyme-adapter-react-16": "^1.1.1",
+    "jest": "^23.1.0",
+    "jest-mock-axios": "^2.1.11",
+    "nock": "^9.3.2",
+    "react-addons-test-utils": "^15.6.2",
+    "react-test-renderer": "^16.4.0",
+    "redux-mock-store": "^1.4.0"
   }
 }

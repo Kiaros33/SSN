@@ -60,11 +60,11 @@ class Login extends Component {
                     <h2>Log-in</h2>
 
                     <div className="form_element">
-                        <input type="email" placeholder="Enter an e-mail" value={this.state.email} onChange={this.handleInputEmail}/>
+                        <input className='email' type="email" placeholder="Enter an e-mail" value={this.state.email} onChange={this.handleInputEmail}/>
                     </div>
 
                     <div className="form_element">
-                        <input type="password" placeholder="Enter a password" value={this.state.password} onChange={this.handleInputPassword}/>
+                        <input className='pass' type="password" placeholder="Enter a password" value={this.state.password} onChange={this.handleInputPassword}/>
                     </div>
 
                     <button type="submit">Go in</button>

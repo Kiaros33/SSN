@@ -1,0 +1,82 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`<Login/> tests should match the snapshot 1`] = `
+<div
+  className="l_container"
+>
+  <form
+    onSubmit={[Function]}
+  >
+    <h2>
+      Log-in
+    </h2>
+    <div
+      className="form_element"
+    >
+      <input
+        className="email"
+        onChange={[Function]}
+        placeholder="Enter an e-mail"
+        type="email"
+        value=""
+      />
+    </div>
+    <div
+      className="form_element"
+    >
+      <input
+        className="pass"
+        onChange={[Function]}
+        placeholder="Enter a password"
+        type="password"
+        value=""
+      />
+    </div>
+    <button
+      type="submit"
+    >
+      Go in
+    </button>
+    <a
+      href="/register"
+      onClick={[Function]}
+    >
+      <button>
+        Register now!
+      </button>
+    </a>
+  </form>
+  <div>
+    <button
+      disabled={true}
+      onClick={[Function]}
+      style={
+        Object {
+          "background": "rgb(220, 78, 65)",
+          "border": "none",
+          "borderRadius": "3px",
+          "color": "#dddddd",
+          "display": "block",
+          "fontSize": "20px",
+          "fontWeight": "300",
+          "margin": "10px auto",
+          "opacity": 0.6,
+          "padding": "10px 52px",
+          "width": "260px",
+        }
+      }
+      type="button"
+    >
+      <span
+        aria-hidden={true}
+        className="fa fa-google"
+      />
+    </button>
+  </div>
+  <div
+    className="l_error"
+  >
+    
+  </div>
+</div>
+`;
