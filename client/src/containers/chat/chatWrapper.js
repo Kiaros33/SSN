@@ -16,7 +16,6 @@ class ChatWrapper extends Component {
         let user1Id = this.props.user.login.id;
         let user2Id = this.props.location.pathname.split('/')[2];
         room = user1Id > user2Id ? user1Id + user2Id : user2Id + user1Id;
-
         require('../../components/chat/socket')(socket,user1Id,user2Id,room,this.props.loadData,this.props.add,this.props.read);
     }
 
@@ -33,6 +32,9 @@ class ChatWrapper extends Component {
     //Disconnect on unmount
     componentWillUnmount() {
         socket.disconnect();
+        this.setState({
+            messages:'-'
+        })
     }
     
     //Render Private chat component with a socket and room
@@ -63,7 +65,7 @@ const mapDispatchToProps = (dispatch) => {
         },
         read: (message) => {
             dispatch(readMessage(message._id));
-        },
+        }
     }
 }
 
