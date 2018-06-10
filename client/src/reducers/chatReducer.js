@@ -12,6 +12,9 @@ export default function (state={
         
         case Constant.load:
             return {...state,chat:action.payload};
+
+        case Constant.clear_messages:
+            return {...state,chat:action.payload.chat};
         
         case Constant.add:
         //Add new message to current array of messages

@@ -8,6 +8,10 @@ import {getAllReq,clearAllReq,cancelIn,acceptIn,cancelOut} from '../../actions';
 //Container for outgoing and incoming
 class Requests extends Component {
 
+    state = {
+        loading:true
+    }
+
     componentWillMount() {
         this.props.loadAll(this.props.user.login.id)
     }
@@ -20,14 +24,17 @@ class Requests extends Component {
         if (this.props.user.login !== nextProps.user.login) {
             this.props.loadAll(this.props.user.login.id)
         }
+        this.setState({
+            loading:false
+        })
     }
     
     
     render() {
         return (
             <div>
-                <Outgoing cancelOut={this.props.cancelOut}/>
-                <Incoming cancelIn={this.props.cancelIn} acceptIn={this.props.accept}/>
+                <Outgoing cancelOut={this.props.cancelOut} loading={this.state.loading}/>
+                <Incoming cancelIn={this.props.cancelIn} acceptIn={this.props.accept} loading={this.state.loading}/>
             </div>
         );
     }

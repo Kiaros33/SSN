@@ -6,6 +6,10 @@ import Popup from 'reactjs-popup';
 
 class Friends extends Component {
 
+    state = {
+        loading:true
+    }
+
     //Get all friends of current user
     componentWillMount() {
         this.props.show(this.props.user.login.id);
@@ -69,13 +73,16 @@ class Friends extends Component {
         if (nextProps.user.login.friends !== this.props.user.login.friends) {
             nextProps.show(nextProps.user.login.id);
         }
+        this.setState({
+            loading:false
+        })
     }
     
     render() {
         return (
             <div className="l_container">
                 <h2>Your Friends:</h2>
-                {this.renderUsers(this.props.user.friends.friends)}
+                {this.state.loading ? 'Loading...' : this.renderUsers(this.props.user.friends.friends)}
                 <hr/>
             </div>
         );

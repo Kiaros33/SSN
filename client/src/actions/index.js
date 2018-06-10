@@ -200,6 +200,17 @@ export const addItem = (message) => ({
 })
 
 
+// Clear messages list //
+export const clearMessagesList = () => ({
+    type: Constant.clear_messages,
+    payload: {
+        chat:{
+            data:"-"
+        }
+    }
+})
+
+
 // Mark message as read //
 export function readMessage(id){
     return (dispatch) => {

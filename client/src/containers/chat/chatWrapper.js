@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import {loadInitialData,addItem,readMessage} from '../../actions';
+import {loadInitialData,addItem,readMessage,clearMessagesList} from '../../actions';
 import Chat from '../../components/chat/chat';
 import io from 'socket.io-client';
 const config = require('../../config').get(process.env.NODE_ENV);
@@ -28,13 +28,11 @@ class ChatWrapper extends Component {
     componentDidUpdate() {
         this.scrollToBottom();
     }
-    
+
     //Disconnect on unmount
     componentWillUnmount() {
-        socket.disconnect();
-        this.setState({
-            messages:'-'
-        })
+        socket.disconnect();      
+        this.props.clear();
     }
     
     //Render Private chat component with a socket and room
@@ -65,6 +63,9 @@ const mapDispatchToProps = (dispatch) => {
         },
         read: (message) => {
             dispatch(readMessage(message._id));
+        },
+        clear: () => {
+            dispatch(clearMessagesList());
         }
     }
 }

@@ -15,7 +15,8 @@ module.exports = {
     google: 'GOOGLE_REG_LOG',
     friend_requests: 'GET_ALL_REQ',
     friends_clear: 'CLEAR_FRIENDS_LIST',
-    requests_clear: 'CLEAR_ALL_REQ'
+    requests_clear: 'CLEAR_ALL_REQ',
+    clear_messages: 'CLEAR_MSGS'
 }
 
 

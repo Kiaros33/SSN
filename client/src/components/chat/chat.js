@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { connect } from 'react-redux';
 import moment from 'moment';
 import FontAwesome from 'react-fontawesome';
 
@@ -140,11 +139,4 @@ class Chat extends Component {
     }
 }
 
-const mapStateToProps = (state) => {
-    return {
-        user: state.user,
-        chat: state.chat
-    }
-}
-
-export default connect(mapStateToProps)(Chat);
+export default Chat

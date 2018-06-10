@@ -21,7 +21,7 @@ const renderUser = (arr,id,cancelOut) => (
 const Outgoing = (props) => (
     <div className="l_container">
         <h2>Outgoing requests</h2>
-        {renderUser(props.user.requests.outReq,props.user.login.id,props.cancelOut)}
+        {props.loading ? 'Loading...' : renderUser(props.user.requests.outReq,props.user.login.id,props.cancelOut)}
         <hr/>
     </div>
 );

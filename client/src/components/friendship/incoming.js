@@ -22,7 +22,7 @@ const renderUser = (arr,id,acceptIn,cancelIn) => (
 const Incoming = (props) => (
     <div className="l_container">
         <h2>Incoming requests</h2>
-        {renderUser(props.user.requests.inReq,props.user.login.id,props.acceptIn,props.cancelIn)}
+        {props.loading ? 'Loading...' : renderUser(props.user.requests.inReq,props.user.login.id,props.acceptIn,props.cancelIn)}
         <hr/>
     </div>
 );
